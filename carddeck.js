@@ -1,6 +1,12 @@
 var Card = function (suit, rank) {
   this.suit = suit;
   this.rank = rank;
+  if (this.rank >= 10) {
+    this.value = 10;
+  }
+
+  else(this.value = this.rank);
+  
 };
 
 Card.SUITS = [
@@ -34,6 +40,8 @@ var Deck = function() {
   this.shuffle();
 };
 
+
+
 // gameState = {currentTurn: 2, players:[{name: "dealer"} {name: "nick", faceUp: [instances], faceDown: [instances], }]}
 
 
@@ -46,7 +54,8 @@ Deck.prototype = {
   },
   shuffle: function() {
     this.cards.sort(function() { return Math.random() - 0.5; });  
-  }
+  },
+
 };
 
 
@@ -54,14 +63,20 @@ var Player = function(name){
     this.name = name;
     this.money = 100;
     this.hand = [];
+    this.totalvalue = 0;
     this.bet = 0;
 };
 
 Player.prototype.totalhand = function(){
-return this.hand.reduce(function(first, second){
-  return first + second;
-});
+  
+  for(var i=0;i<this.hand.length;i++){
+    this.totalvalue += this.hand[i].value;
+  }
+  return this.totalvalue;
 };
+
+
+
 
 
 // GAME CLASS + PROTOTYPE
@@ -111,26 +126,31 @@ Player.prototype.busted = function(){
 };
 
 Player.prototype.blackjack = function(){
-  return this.hand[0] > 10 && this.hand[1] === 1;
+  return (this.hand[0].rank > 10 && this.hand[1].rank === 1) || (this.hand[1].rank > 10 && this.hand[0].rank === 1);
 };
 
 Player.prototype._21 = function() {
- return this.totalhand === 21 && !this.blackjack;
+  
+ return this.totalhand() === 21 && !this.blackjack();
 };
 
 Player.prototype.under21 = function() {
-  return this.totalhand < 21;
+  return this.totalhand() < 21;
 };
 
 Game.prototype.dealerUnder17 =  function() {
-  return this.playersArray[-1].totalhand < 17;
+  console.log(this);
+  return this.playersArray[this.playersArray.length -1].totalhand() < 17;
 };
 
 Game.prototype.dealerOver16 =  function() {
-  return 21 > this.playersArray[-1].totalhand > 16;
+  var players = this.playersArray;
+  var dealer = players[players.length -1];
+  var x = dealer.totalhand();
+  return ((21 > x) && (x > 16));
+  
 };
 
-dealerValue();
 
 Game.prototype.gameWon = function() {
 this.checkForBlackjack();
@@ -174,17 +194,40 @@ Game.prototype.play = function() {
 };
 
 // ---------------------------------------
+var newArr = [];
+Game.prototype.clearDeck = function(){
+
+ for (var i=0; i<this.currentDeck.cards.length;i++){
+
+  if ( 9 < this.currentDeck.cards[i].rank || this.currentDeck.cards[i].rank === 1){
+    // console.log(.rank);
+     newArr.push(this.currentDeck.cards[i]);
+  } 
+  }
+  
+  // console.log(this.currentDeck.cards);
+};
 
 var startGame = function(array){
     
     var g = new Game(array);
+    // g.clearDeck();
+    // g.currentDeck.cards = newArr;
     console.log(g);
     g.initialDeal(); 
-    console.log(g.hit(1));
-    console.log(g.playersArray[1].totalhand());
+    g.deal(1,1);
+    console.log("Deal 0) " + g.playersArray[1].hand[0].value);
+    console.log("Deal 1) " +g.playersArray[1].hand[1].value);
+    console.log("Deal 2) " +g.playersArray[1].hand[2].value);
+    console.log("Dealer over 16 < " + g.dealerOver16() + " < 21 ");
+    
 
 };
 
+
+
+
+
   
 // on timer finishing
-startGame(["nick", "camilo"]);
+startGame(["nick"]);
