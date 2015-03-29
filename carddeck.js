@@ -83,7 +83,7 @@ var Player = function(name){
   // by pushing every element into the sortedArr
   for (var i=0;i<this.hand.length;i++) {
     sortedArr.push(this.hand[i]);
-  };
+  }
   //sort that new array(sortedArr) by the value of each card instance
   sortedArr.sort(function (a, b) {
     if (a.valueOf() > b.valueOf()) {
@@ -103,11 +103,11 @@ var Player = function(name){
 
     //if it is, loop through the rest of the values and add them up.
     // set that equal to a newTotal;
-    var newTotal = 0
+    var newTotal = 0;
 
-    for (var i=1;i<sortedArr.length; i++){
+    for (var a=1;a<sortedArr.length; a++){
 
-      newTotal += sortedArr[i].valueOf(); 
+      newTotal += sortedArr[a].valueOf(); 
       // console.log("newTotal",newTotal);
     }
     
@@ -115,8 +115,8 @@ var Player = function(name){
     // equal to 11, not 1. so add 10 to the totalvalue
     if (newTotal < 10){
 
-      this.totalValue += 10
-      this.aceCounter += 1
+      this.totalValue += 10;
+      this.aceCounter += 1;
     }
   }
 
@@ -124,8 +124,8 @@ var Player = function(name){
   // take all the cards, and add them up. 
 
 
-    for(var i=0;i<this.hand.length;i++){
-      this.totalValue += this.hand[i].value;
+    for(var j=0;j<this.hand.length;j++){
+      this.totalValue += this.hand[j].value;
 
       
     }
@@ -170,6 +170,10 @@ Game.prototype.checkForWinner = function(index) {
     if (player.totalValue > 21) {
         player.bet = 0;
         console.log("Player Busted (90)");
+    // Dealer Wins with BlackJack   
+    } else if (dealer.blackjack() && !(player.blackjack())) {
+      player.bet = 0;
+      console.log("Delaer wins with BLACKJACK");
     // Player Win    
     } else if (player.totalValue > dealer.totalValue){
         if (player.blackjack()) {
@@ -286,8 +290,8 @@ Game.prototype.clearDeck = function(){
 var startGame = function(array){
     
     var g = new Game(array);
-    // g.clearDeck();
-    // g.currentDeck.cards = newArr;
+    g.clearDeck();
+    g.currentDeck.cards = newArr;
     g.initialDeal(); 
     
     console.log("Dealer");
@@ -299,7 +303,26 @@ var startGame = function(array){
     console.log("Player 1");
     console.log("0) " + g.playersArray[0].hand[0].rank);
     console.log("1) " +g.playersArray[0].hand[1].rank);
+    // g.hit(0);
+    // console.log("2) " + g.playersArray[0].hand[2].rank);
     console.log("Total: ", g.playersArray[0].totalValue);
+    console.log(" ");
+    g.checkForWinner(0);
+    console.log(" ");
+    console.log("Dealer Cards: " +g.playersArray[2].hand);
+
+
+    // for (var i = 0; i < g.playersArray[2].hand.length; i++) {
+    //   console.log(g.playersArray[2].hand[i]);
+    // }
+    
+
+
+    // console.log(" ");
+    // console.log("Player 2");
+    // console.log("0) " + g.playersArray[1].hand[0].rank);
+    // console.log("1) " +g.playersArray[1].hand[1].rank);
+    // console.log("Total: ", g.playersArray[1].totalValue);
 
   
 };
