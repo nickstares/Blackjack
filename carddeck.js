@@ -1,4 +1,6 @@
 
+
+
 // -------------------CARD CLASS --------------------------
 var Card = function (suit, rank) {
   this.suit = suit;
@@ -67,17 +69,70 @@ var Player = function(name){
     this.money = 90;
     this.hand = [];
     this.totalValue = 0;
+    this.aceCounter = 0;
     this.bet = 10;
 };
 
-Player.prototype.totalhand = function(){
+ Player.prototype.totalhand = function(){
   this.totalValue = 0;
-  for(var i = 0 ;i < this.hand.length; i++){
-    this.totalValue += this.hand[i].value;
+  // i need to make a new array to sort the cards in 
+
+  var sortedArr = [];
+
+  //make that new array equal to the hand array
+  // by pushing every element into the sortedArr
+  for (var i=0;i<this.hand.length;i++) {
+    sortedArr.push(this.hand[i]);
+  };
+  //sort that new array(sortedArr) by the value of each card instance
+  sortedArr.sort(function (a, b) {
+    if (a.valueOf() > b.valueOf()) {
+      return 1;
+    }
+    if (a.valueOf() < b.valueOf()) {
+      return -1;
+    }
+    return 0;
+  });
+
+
+  //check to see if the first card is an ace (really, if there is an ace in the array)
+  // make sure to check that this function hasn't been called before for this player
+
+  if (sortedArr[0].valueOf() === 1 && this.aceCounter === 0) {
+
+    //if it is, loop through the rest of the values and add them up.
+    // set that equal to a newTotal;
+    var newTotal = 0
+
+    for (var i=1;i<sortedArr.length; i++){
+
+      newTotal += sortedArr[i].valueOf(); 
+      // console.log("newTotal",newTotal);
+    }
+    
+    // if the sum of the other values is less than 10, we want the ace 
+    // equal to 11, not 1. so add 10 to the totalvalue
+    if (newTotal < 10){
+
+      this.totalValue += 10
+      this.aceCounter += 1
+    }
   }
-  // console.log("This Hand Dealer",this.totalValue);
-  return this.totalValue;
-};
+
+  // console.log("this.totalValue",this.totalValue);
+  // take all the cards, and add them up. 
+
+
+    for(var i=0;i<this.hand.length;i++){
+      this.totalValue += this.hand[i].value;
+
+      
+    }
+    return this.totalValue;
+
+
+} ;
 
 
 //------------- GAME CLASS -------------------------------------
@@ -153,6 +208,7 @@ Game.prototype.dealerStatus = function(){
     if (!this.playersArray[this.playersArray.length -1].blackjack()){
       this.deal(this.playersArray.length-1,1); // Check for hit 
       console.log("card delt");
+      console.log(this.playersArray[2].totalValue);
     }
   }
 };
@@ -295,6 +351,7 @@ startGame(["nick", "camilo"]);
 // while (this.dealerUnder17()){
 //     this.deal(this.playersArray.length-1,1); // Check for hit 
 //   }      
+
 
 
 
