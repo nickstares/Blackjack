@@ -106,6 +106,7 @@ Game.prototype.deal = function(index, cards){
 // -------------------CHECK FOR WINNER -----------------
 
 Game.prototype.checkForWinner = function(index) {
+  this.dealerStatus();
   // Instance of the Dealer
   var dealer = this.playersArray[this.playersArray.length-1]; 
   var player = this.playersArray[index];
@@ -233,13 +234,16 @@ var startGame = function(array){
     // g.currentDeck.cards = newArr;
     g.initialDeal(); 
     
-    console.log("Deal 0) " + g.playersArray[2].hand[0].rank);
-    console.log("Deal 1) " +g.playersArray[2].hand[1].rank);
+    console.log("Dealer");
+    console.log("0) " + g.playersArray[2].hand[0].rank);
+    console.log("1) " +g.playersArray[2].hand[1].rank);
     console.log("Total: ", g.playersArray[2].totalValue);
     console.log("");
-    g.dealerStatus();
-    console.log("Deal Hand: " +g.playersArray[2].hand);
-    console.log("Total: ", g.playersArray[2].totalValue);
+    
+    console.log("Player 1");
+    console.log("0) " + g.playersArray[0].hand[0].rank);
+    console.log("1) " +g.playersArray[0].hand[1].rank);
+    console.log("Total: ", g.playersArray[0].totalValue);
 
   
 };
