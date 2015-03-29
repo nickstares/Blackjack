@@ -1,6 +1,12 @@
 var Card = function (suit, rank) {
   this.suit = suit;
   this.rank = rank;
+  if (this.rank >= 10) {
+    this.value = 10;
+  }
+
+  else(this.value = this.rank);
+  
 };
 
 Card.SUITS = [
@@ -27,11 +33,8 @@ Card.prototype = {
 var Deck = function() {
   this.cards = [];
   for (var i = 0; i < Card.SUITS.length; i++) {   
-    for (var rank = 10; rank <= 13; rank++) {
+    for (var rank = 1; rank <= 13; rank++) {
       this.cards.push(new Card(Card.SUITS[i], rank));
-    }
-    for (var rank2 = 1; rank2 <= 2; rank2++) { // Camilo delete
-      this.cards.push(new Card(Card.SUITS[i], 1)); // Camilo delete
     }
   }
   this.shuffle();
@@ -39,31 +42,33 @@ var Deck = function() {
 
 // gameState = {currentTurn: 2, players:[{name: "dealer"} {name: "nick", faceUp: [instances], faceDown: [instances], }]}
 
-
 Deck.prototype = {
   count: function() {
     return this.cards.length;
   },
   draw: function(n) {
-    return this.cards.splice(n, n); // Camilo change for -n
+    return this.cards.splice(-n, n);
   },
   shuffle: function() {
     this.cards.sort(function() { return Math.random() - 0.5; });  
-  }
+  },
 };
-
 
 var Player = function(name){
     this.name = name;
     this.money = 100;
     this.hand = [];
-    this.bet = 0;
+    this.totalValue = 0;
+    this.bet = 10;
 };
 
 Player.prototype.totalhand = function(){
-return this.hand.reduce(function(first, second){
-  return first + second;
-});
+  // this.totalValue = 0;
+  for(var i = 0 ;i < this.hand.length; i++){
+    this.totalValue += this.hand[i].value;
+  }
+  // console.log("This Hand Dealer",this.totalValue);
+  return this.totalValue;
 };
 
 
@@ -71,7 +76,6 @@ return this.hand.reduce(function(first, second){
 
 var Game = function(players) {
     this.playersArray = [];
-    
 //     this.currentTurn = 
 // push a player into the playersArray for each player in the
 // array that is passed in when you create a new game
@@ -83,73 +87,93 @@ var Game = function(players) {
     this.turn = 0;
 };
 
-
-
-
 Game.prototype.deal = function(index, cards){ 
     // this sets the current hand equal to the hand concatinated with the cards drawn
     this.playersArray[index].hand = this.playersArray[index].hand.concat(this.currentDeck.draw(cards));
+    this.playersArray[index].totalhand();
 };
  
 
-Game.prototype.checkForBlackjack = function() {
-var dealer = this.playersArray[-1];     
- for(var i=0;i<playersArray.length-1;i++){
-   if (playersArray[i].blackjack() && dealer.blackjack()){
-    // put the bet back in the total money
-    playersArray[i].money += playersArray[i].bet;
-   }
-   else if (playersArray[i].blackjack() && !dealer._21()) {
-    return playersArray[i].money += ( (playersArray[i].bet * 1.5) + playersArray[i].bet);
-   }
- } 
-};
-
-Game.prototype.checkForHigherValue = function() {
-
+// 
+Game.prototype.checkForHigherValue = function(position) {
+  
+  // Instances of the Dealer and the Player
+  var dealer = this.playersArray[this.playersArray.length-1]; 
+  // var player = this.playersArray[position];
+  
+  while (this.dealerUnder17()){
+    this.deal(this.playersArray.length-1,1);
+    dealer.totalhand();  
+    console.log("Deal 2) " + this.playersArray[2].hand[2].value);
+    console.log("D New Total: ", this.playersArray[2].totalValue);
+    if (dealer.totalValue > 21) {
+      console.log("House Loose");
+    }
+  }      
+  
+  for(var i=0;i < this.playersArray.length-1;i++){
+    if (this.playersArray[i].totalValue > dealer.totalValue){
+         if (this.playersArray[i].blackjack()) {
+          this.playersArray[i].money += ( (this.playersArray[i].bet * 1.5) + this.playersArray[i].bet);
+          console.log("Player Wins with Blackjack"); 
+         }else{
+          console.log("Player Wins this Hand"); 
+          this.playersArray[i].money += ( (this.playersArray[i].bet) + this.playersArray[i].bet);
+         }
+    }
+  }    
+   // } else if ((player.totalValue > dealer.totalValue) && (this.dealerUnder17())){
+   //    // It draws a card to (dealer index, # of cards)
+   //    this.deal(this.playersArray.length-1,1);
+   //    dealer.totalhand();
+      
+   //    console.log("Deal 2) " + this.playersArray[2].hand[2].value);
+   //    console.log("D New Total: ", this.playersArray[2].totalValue);
+   // }
+   
 };
 
 Player.prototype.busted = function(){
-  return this.totalhand > 21;
+  var hand = this.totalhand();
+  return hand > 21;
 };
 
 Player.prototype.blackjack = function(){
-  console.log("Card 0", this.hand[0].face_card);
-  console.log("Card 1", this.hand[0].face_card);
   return (this.hand[0].face_card && this.hand[1].rank === 1) || (this.hand[1].face_card && this.hand[0].rank === 1);
 };
 
 Player.prototype._21 = function() {
- return this.totalhand === 21 && !this.blackjack;
+ return this.totalhand() === 21 && !this.blackjack();
 };
 
 Player.prototype.under21 = function() {
-  return this.totalhand < 21;
+  return this.totalhand() < 21;
 };
 
 Game.prototype.dealerUnder17 =  function() {
-  return this.playersArray[-1].totalhand < 17;
+  // console.log(this);
+  // return this.playersArray[this.playersArray.length -1].totalhand() < 17;
+  return this.playersArray[this.playersArray.length -1].totalValue < 17;
 };
 
 Game.prototype.dealerOver16 =  function() {
-  return 21 > this.playersArray[-1].totalhand > 16;
+  var players = this.playersArray;
+  var dealer = players[players.length -1];
+  var x = dealer.totalValue;
+  return ((21 > x) && (x > 16)); 
 };
 
 
 
 Game.prototype.gameWon = function() {
-this.checkForBlackjack();
-//   this.checkForHigherValue();
-
-//   
+  
+  // if (this.checkForBlackjack()) {
+  //     //Return Winners
+  // } else if (this.checkForHigherValue()) {
+  //     //Return winners
+  // }  
   
 };
-
-
-
-
-
-
 
 
 
@@ -165,38 +189,85 @@ Game.prototype.hit = function(playerIndex){
   this.deal(playerIndex, 1);
 };
 
-
-
 Game.prototype.stand = function(){
 this.turn += 1;
 };
 
-
 Game.prototype.play = function() {
-  // figures out what turn it is
-  // renders buttons to that person.
- this.gameWon();
+  
 };
 
 // ---------------------------------------
+var newArr = [];
+Game.prototype.clearDeck = function(){
+  for (var i=0; i<this.currentDeck.cards.length;i++){
+    if ( 9 < this.currentDeck.cards[i].rank || this.currentDeck.cards[i].rank === 1){
+    newArr.push(this.currentDeck.cards[i]);
+    } 
+  }
+  // console.log(this.currentDeck.cards);
+};
 
 var startGame = function(array){
     
     var g = new Game(array);
+    // g.clearDeck();
+    // g.currentDeck.cards = newArr;
     g.initialDeal(); 
+    g.play();
 
-    console.log("Deal 0) " + g.playersArray[0].hand[0].rank);
-    console.log("Deal 1) " +g.playersArray[0].hand[1].rank);
-    console.log("Dealer BJ " + g.playersArray[1].blackjack());
 
-    // console.log (" ");
-    // console.log("P1 0) " + g.playersArray[1].hand[0].rank);
-    // console.log("P1 1) " +g.playersArray[1].hand[1].rank);
-    
-    
-    // console.log("Player BJ " + g.playersArray[1].blackjack());
+
+    console.log("Deal 0) " + g.playersArray[2].hand[0].rank);
+    console.log("Deal 1) " +g.playersArray[2].hand[1].rank);
+    console.log("Total: ", g.playersArray[2].totalValue);
+    // g.deal(0,1);
+    console.log(" ");
+    console.log("Pla1 0) " +g.playersArray[0].hand[0].rank);
+    console.log("Pla1 1) " +g.playersArray[0].hand[1].rank);
+    console.log("Total: ", g.playersArray[0].totalValue);
+    console.log(" ");
+    // console.log("CHECK FOR HIGHER BJ: " + g.checkForBlackjack(0));    
+
+    console.log("CHECK FOR HIGHER VALUE: " + g.checkForHigherValue(0));
+  
 };
 
   
 // on timer finishing
 startGame(["nick", "camilo"]);
+
+
+
+
+
+
+
+
+
+
+
+
+//-------------------
+
+
+// Game.prototype.checkForBlackjack = function() {
+// var dealer = this.playersArray[this.playersArray.length-1];     
+//  for(var i=0;i < this.playersArray.length-1;i++){
+//    if (this.playersArray[i].blackjack() && dealer.blackjack()){
+//     // put the bet back in the total money
+//      var bjboth = this.playersArray[i].money += this.playersArray[i].bet;
+//      console.log(bjuser);
+//    }
+//    else if (this.playersArray[i].blackjack() && !dealer._21()) {
+//      var  bjplayer = this.playersArray[i].money += ( (this.playersArray[i].bet * 1.5) + this.playersArray[i].bet);
+//      console.log(bjplayer);
+//    }
+//    else if (dealer.blackjack() && !(this.playersArray[i].blackjack())){
+//      console.log("Dealer Wins");
+//    }
+//    else {
+//      console.log("None has BLACKJACK");
+//    }
+//  } 
+// };
