@@ -27,8 +27,11 @@ Card.prototype = {
 var Deck = function() {
   this.cards = [];
   for (var i = 0; i < Card.SUITS.length; i++) {   
-    for (var rank = 1; rank <= 13; rank++) {
+    for (var rank = 10; rank <= 13; rank++) {
       this.cards.push(new Card(Card.SUITS[i], rank));
+    }
+    for (var rank2 = 1; rank2 <= 2; rank2++) { // Camilo delete
+      this.cards.push(new Card(Card.SUITS[i], 1)); // Camilo delete
     }
   }
   this.shuffle();
@@ -42,7 +45,7 @@ Deck.prototype = {
     return this.cards.length;
   },
   draw: function(n) {
-    return this.cards.splice(-n, n);
+    return this.cards.splice(n, n); // Camilo change for -n
   },
   shuffle: function() {
     this.cards.sort(function() { return Math.random() - 0.5; });  
@@ -111,7 +114,9 @@ Player.prototype.busted = function(){
 };
 
 Player.prototype.blackjack = function(){
-  return this.hand[0] > 10 && this.hand[1] === 1;
+  console.log("Card 0", this.hand[0].face_card);
+  console.log("Card 1", this.hand[0].face_card);
+  return (this.hand[0].face_card && this.hand[1].rank === 1) || (this.hand[1].face_card && this.hand[0].rank === 1);
 };
 
 Player.prototype._21 = function() {
@@ -130,7 +135,7 @@ Game.prototype.dealerOver16 =  function() {
   return 21 > this.playersArray[-1].totalhand > 16;
 };
 
-dealerValue();
+
 
 Game.prototype.gameWon = function() {
 this.checkForBlackjack();
@@ -178,11 +183,18 @@ Game.prototype.play = function() {
 var startGame = function(array){
     
     var g = new Game(array);
-    console.log(g);
     g.initialDeal(); 
-    console.log(g.hit(1));
-    console.log(g.playersArray[1].totalhand());
 
+    console.log("Deal 0) " + g.playersArray[0].hand[0].rank);
+    console.log("Deal 1) " +g.playersArray[0].hand[1].rank);
+    console.log("Dealer BJ " + g.playersArray[1].blackjack());
+
+    // console.log (" ");
+    // console.log("P1 0) " + g.playersArray[1].hand[0].rank);
+    // console.log("P1 1) " +g.playersArray[1].hand[1].rank);
+    
+    
+    // console.log("Player BJ " + g.playersArray[1].blackjack());
 };
 
   
