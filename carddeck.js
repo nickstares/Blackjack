@@ -1,3 +1,5 @@
+
+// -------------------CARD CLASS --------------------------
 var Card = function (suit, rank) {
   this.suit = suit;
   this.rank = rank;
@@ -29,7 +31,6 @@ Card.prototype = {
   }
 };
 
-
 var Deck = function() {
   this.cards = [];
   for (var i = 0; i < Card.SUITS.length; i++) {   
@@ -41,6 +42,10 @@ var Deck = function() {
 };
 
 // gameState = {currentTurn: 2, players:[{name: "dealer"} {name: "nick", faceUp: [instances], faceDown: [instances], }]}
+
+
+// -------------------DECK CLASS ------------------------------
+
 
 Deck.prototype = {
   count: function() {
@@ -54,16 +59,19 @@ Deck.prototype = {
   },
 };
 
+
+// -------------------PLAYER CLASS ------------------------------
+
 var Player = function(name){
     this.name = name;
-    this.money = 100;
+    this.money = 90;
     this.hand = [];
     this.totalValue = 0;
     this.bet = 10;
 };
 
 Player.prototype.totalhand = function(){
-  // this.totalValue = 0;
+  this.totalValue = 0;
   for(var i = 0 ;i < this.hand.length; i++){
     this.totalValue += this.hand[i].value;
   }
@@ -72,7 +80,7 @@ Player.prototype.totalhand = function(){
 };
 
 
-// GAME CLASS + PROTOTYPE
+//------------- GAME CLASS -------------------------------------
 
 var Game = function(players) {
     this.playersArray = [];
@@ -87,6 +95,7 @@ var Game = function(players) {
     this.turn = 0;
 };
 
+
 Game.prototype.deal = function(index, cards){ 
     // this sets the current hand equal to the hand concatinated with the cards drawn
     this.playersArray[index].hand = this.playersArray[index].hand.concat(this.currentDeck.draw(cards));
@@ -94,44 +103,63 @@ Game.prototype.deal = function(index, cards){
 };
  
 
-// 
-Game.prototype.checkForHigherValue = function(position) {
-  
-  // Instances of the Dealer and the Player
+// -------------------CHECK FOR WINNER -----------------
+
+Game.prototype.checkForWinner = function(index) {
+  // Instance of the Dealer
   var dealer = this.playersArray[this.playersArray.length-1]; 
-  // var player = this.playersArray[position];
-  
-  while (this.dealerUnder17()){
-    this.deal(this.playersArray.length-1,1);
-    dealer.totalhand();  
-    console.log("Deal 2) " + this.playersArray[2].hand[2].value);
-    console.log("D New Total: ", this.playersArray[2].totalValue);
-    if (dealer.totalValue > 21) {
-      console.log("House Loose");
+  var player = this.playersArray[index];
+    
+    // Player busted  
+    if (player.totalValue > 21) {
+        player.bet = 0;
+        console.log("Player Busted (90)");
+    // Player Win    
+    } else if (player.totalValue > dealer.totalValue){
+        if (player.blackjack()) {
+          player.money += (player.bet * 2.5);  
+          console.log("Player Wins with BLACKJACK (115)");
+        } else {
+          player.money += (player.bet * 2);  
+          console.log("Player Wins (110)");
+        } 
+        player.bet = 0;
+    // Dealer Busted - Player Win    
+    } else if ((player.totalValue < dealer.totalValue) && (dealer.totalValue > 21)) {
+      player.money += (player.bet * 2);
+      player.bet = 0;  
+      console.log("Player Wins - Dealer Busted (110)");
+    // Dealer Win   
+    } else if ((player.totalValue < dealer.totalValue) && (dealer.totalValue < 22)){
+      player.bet = 0;
+      console.log("Dealer Wins ");
+    // Tie Game    
+    } else if (player.totalValue === dealer.totalValue) {
+      if (player.blackjack() && !dealer.blackjack()) {
+        player.money += (player.bet * 2.5);  
+        console.log("Player Win with BJ and Dealer only 21");    
+      } 
+      player.totalValue += player.bet;  
+      player.bet = 0;
+      console.log("Tie Game");
     }
-  }      
-  
-  for(var i=0;i < this.playersArray.length-1;i++){
-    if (this.playersArray[i].totalValue > dealer.totalValue){
-         if (this.playersArray[i].blackjack()) {
-          this.playersArray[i].money += ( (this.playersArray[i].bet * 1.5) + this.playersArray[i].bet);
-          console.log("Player Wins with Blackjack"); 
-         }else{
-          console.log("Player Wins this Hand"); 
-          this.playersArray[i].money += ( (this.playersArray[i].bet) + this.playersArray[i].bet);
-         }
-    }
-  }    
-   // } else if ((player.totalValue > dealer.totalValue) && (this.dealerUnder17())){
-   //    // It draws a card to (dealer index, # of cards)
-   //    this.deal(this.playersArray.length-1,1);
-   //    dealer.totalhand();
-      
-   //    console.log("Deal 2) " + this.playersArray[2].hand[2].value);
-   //    console.log("D New Total: ", this.playersArray[2].totalValue);
-   // }
-   
 };
+
+//-------------- DELAER STATUS -----------------------
+
+Game.prototype.dealerStatus = function(){
+  while (this.dealerUnder17()){
+    if (!this.playersArray[this.playersArray.length -1].blackjack()){
+      this.deal(this.playersArray.length-1,1); // Check for hit 
+      console.log("card delt");
+    }
+  }
+};
+
+
+//-------------- SUPPORTIVE FUNCTIONS ------------------
+
+
 
 Player.prototype.busted = function(){
   var hand = this.totalhand();
@@ -139,7 +167,11 @@ Player.prototype.busted = function(){
 };
 
 Player.prototype.blackjack = function(){
-  return (this.hand[0].face_card && this.hand[1].rank === 1) || (this.hand[1].face_card && this.hand[0].rank === 1);
+  if (this.hand.length === 2) {
+    return (this.hand[0].face_card && this.hand[1].rank === 1) || (this.hand[1].face_card && this.hand[0].rank === 1);
+  }else{
+    return false;
+  }
 };
 
 Player.prototype._21 = function() {
@@ -164,19 +196,6 @@ Game.prototype.dealerOver16 =  function() {
 };
 
 
-
-Game.prototype.gameWon = function() {
-  
-  // if (this.checkForBlackjack()) {
-  //     //Return Winners
-  // } else if (this.checkForHigherValue()) {
-  //     //Return winners
-  // }  
-  
-};
-
-
-
 Game.prototype.initialDeal = function() {
   _this = this;
   this.playersArray.forEach(function(el, index){
@@ -193,20 +212,19 @@ Game.prototype.stand = function(){
 this.turn += 1;
 };
 
-Game.prototype.play = function() {
-  
-};
 
-// ---------------------------------------
+// -------------------TEST DECK  ------------------------------
 var newArr = [];
 Game.prototype.clearDeck = function(){
   for (var i=0; i<this.currentDeck.cards.length;i++){
-    if ( 9 < this.currentDeck.cards[i].rank || this.currentDeck.cards[i].rank === 1){
+    if ( 10 < this.currentDeck.cards[i].rank || this.currentDeck.cards[i].rank === 1){
     newArr.push(this.currentDeck.cards[i]);
     } 
   }
   // console.log(this.currentDeck.cards);
 };
+
+// -------------------START GAME  ------------------------------
 
 var startGame = function(array){
     
@@ -214,27 +232,20 @@ var startGame = function(array){
     // g.clearDeck();
     // g.currentDeck.cards = newArr;
     g.initialDeal(); 
-    g.play();
-
-
-
+    
     console.log("Deal 0) " + g.playersArray[2].hand[0].rank);
     console.log("Deal 1) " +g.playersArray[2].hand[1].rank);
     console.log("Total: ", g.playersArray[2].totalValue);
-    // g.deal(0,1);
-    console.log(" ");
-    console.log("Pla1 0) " +g.playersArray[0].hand[0].rank);
-    console.log("Pla1 1) " +g.playersArray[0].hand[1].rank);
-    console.log("Total: ", g.playersArray[0].totalValue);
-    console.log(" ");
-    // console.log("CHECK FOR HIGHER BJ: " + g.checkForBlackjack(0));    
+    console.log("");
+    g.dealerStatus();
+    console.log("Deal Hand: " +g.playersArray[2].hand);
+    console.log("Total: ", g.playersArray[2].totalValue);
 
-    console.log("CHECK FOR HIGHER VALUE: " + g.checkForHigherValue(0));
   
 };
 
-  
-// on timer finishing
+// -------------------ADD NEW PLAYERS  ------------------------------
+
 startGame(["nick", "camilo"]);
 
 
@@ -248,7 +259,7 @@ startGame(["nick", "camilo"]);
 
 
 
-//-------------------
+//------------------- WE DO NOT NEED THIS -----------------------
 
 
 // Game.prototype.checkForBlackjack = function() {
@@ -271,3 +282,19 @@ startGame(["nick", "camilo"]);
 //    }
 //  } 
 // };
+
+
+
+
+
+
+// while (this.dealerUnder17()){
+//     this.deal(this.playersArray.length-1,1); // Check for hit 
+//   }      
+
+
+
+
+
+
+
