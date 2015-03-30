@@ -66,11 +66,11 @@ Deck.prototype = {
 
 var Player = function(name){
     this.name = name;
-    this.money = 90;
+    this.money = 100;
     this.hand = [];
     this.totalValue = 0;
     this.aceCounter = 0;
-    this.bet = 10;
+    this.bet = 0;
 };
 
  Player.prototype.totalhand = function(){
@@ -355,6 +355,12 @@ var startGame = function(array){
       console.log(g.playersArray[0].money);
     });
   
+    $('#formbet').on("submit", function(e){
+      
+      g.playersArray[0].bet = parseInt($('#bet').val());
+      g.playersArray[0].money -= g.playersArray[0].bet;
+      console.log("Player Bet ",g.playersArray[0].bet);
+    });
 };
 
 // -------------------ADD NEW PLAYERS  ------------------------------
