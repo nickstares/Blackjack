@@ -76,9 +76,7 @@ var Player = function(name){
  Player.prototype.totalhand = function(){
   this.totalValue = 0;
   // i need to make a new array to sort the cards in 
-
   var sortedArr = [];
-
   //make that new array equal to the hand array
   // by pushing every element into the sortedArr
   for (var i=0;i<this.hand.length;i++) {
@@ -120,15 +118,18 @@ var Player = function(name){
     }
   }
 
+  if (sortedArr.length === 2 && 
+    ((sortedArr[0].valueOf() === 1 && sortedArr[1].valueOf() >= 10) || (sortedArr[1].valueOf() === 1 && sortedArr[0].valueOf() >= 10)) && this.aceCounter === 0) {
+    this.totalValue += 10;
+    this.aceCounter += 1;
+}
+
   // console.log("this.totalValue",this.totalValue);
   // take all the cards, and add them up. 
-
-
     for(var j=0;j<this.hand.length;j++){
       this.totalValue += this.hand[j].value;
-
-      
     }
+
     return this.totalValue;
 
 
@@ -197,7 +198,7 @@ Game.prototype.checkForWinner = function(index) {
     } else if (player.totalValue === dealer.totalValue) {
       if (player.blackjack() && !dealer.blackjack()) {
         player.money += (player.bet * 2.5);  
-        console.log("Player Win with BJ and Dealer only 21");    
+        console.log("Player Wins with BJ and Dealer only 21");    
       } 
       player.totalValue += player.bet;  
       player.bet = 0;
@@ -228,11 +229,7 @@ Player.prototype.busted = function(){
 };
 
 Player.prototype.blackjack = function(){
-  if (this.hand.length === 2) {
-    return (this.hand[0].face_card && this.hand[1].rank === 1) || (this.hand[1].face_card && this.hand[0].rank === 1);
-  }else{
-    return false;
-  }
+  return (this.hand[0].face_card && this.hand[1].rank === 1) || (this.hand[1].face_card && this.hand[0].rank === 1);
 };
 
 Player.prototype._21 = function() {
@@ -278,7 +275,7 @@ this.turn += 1;
 var newArr = [];
 Game.prototype.clearDeck = function(){
   for (var i=0; i<this.currentDeck.cards.length;i++){
-    if ( 10 < this.currentDeck.cards[i].rank || this.currentDeck.cards[i].rank === 1){
+    if ( 9 < this.currentDeck.cards[i].rank || this.currentDeck.cards[i].rank === 1){
     newArr.push(this.currentDeck.cards[i]);
     } 
   }
