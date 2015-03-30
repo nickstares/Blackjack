@@ -6,18 +6,20 @@ var redis = require("redis");
 var client = redis.createClient();
 var methodOverride = require("method-override");
 var bodyParser = require("body-parser");
-
+var game = require("./game.js").startGame(["nick"]);
 
 
 
 io.on('connection', function(socket){
-  socket.on('chat message', function(msg){
-    io.emit('chat message', msg);
+  socket.on('console log', function(msg){
+
+    io.emit('console log', game.initialDeal());
+    io.emit('console log', game);
   });
 });
 
 app.get('/', function(req, res){
-  res.render('index');
+  res.render('blackjack');
 });
 
 //middleware below
@@ -29,9 +31,9 @@ app.use(express.static(__dirname + "/public"));
 var loggedIn = [];
 
 // Root Route && Login
-app.get('/', function(req, res) {
- res.render('index');
-});
+// app.get('/', function(req, res) {
+//  res.render('index');
+// });
 
 // Render new user page
 app.get('/newUser', function(req, res){
@@ -67,6 +69,7 @@ app.get('/globalchat', function(req, res){
 
       if (req.body.userPass == reply){
         res.redirect("/globalchat");
+        // set session hash to have user 
       } else {
         console.log("Incorrect UserName or Password");
         res.redirect('/');
