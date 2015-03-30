@@ -119,6 +119,14 @@ var Player = function(name){
       this.aceCounter += 1;
     }
   }
+   
+   if (sortedArr.length === 2 && 
+((sortedArr[0].valueOf() === 1 && sortedArr[1].valueOf() >= 10)||
+(sortedArr[1].valueOf() === 1 && sortedArr[0].valueOf() >= 10))
+ && this.aceCounter === 0) {
+      this.totalValue += 10;
+      this.aceCounter += 1;
+   }
 
   // console.log("this.totalValue",this.totalValue);
   // take all the cards, and add them up. 
