@@ -159,9 +159,9 @@ var Game = function(players) {
 
 Game.prototype.deal = function(index, cards){ 
     // this sets the current hand equal to the hand concatinated with the cards drawn
-    this.playersArray[index].hand = this.playersArray[index].hand.concat(this.currentDeck.draw(cards));
+   return this.playersArray[index].hand = this.playersArray[index].hand.concat(this.currentDeck.draw(cards));
     this.playersArray[index].totalhand();
-    console.log("Card "+this.playersArray[index].hand);
+
 };
  
 

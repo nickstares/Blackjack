@@ -1,9 +1,4 @@
 $(document).ready(function() { 
-//     $('#hit').on("submit", function(e){
-//       e.preventDefault();
-//       g.hit(0);
-//       console.log("Busted? ", g.playersArray[0].busted());
-//     });
 
 //     $('#stand').on("submit", function(e){
 //       e.preventDefault();
@@ -59,16 +54,28 @@ $(document).ready(function() {
 
 
 // //------------------- JQUERY -----------------------
+
+
+
+
 var socket = io();  
 $('#newGame').on("submit", function(e){
   e.preventDefault();
-  socket.emit('console log', "request");
+  socket.emit('new game', "request");
 });
 
-socket.on('console log', function(msg){
+socket.on('new game', function(msg){
 console.log(msg);
 });
 
+  $('#hit').on("submit", function(e){
+    e.preventDefault();
+    socket.emit('hit request');
+  });
+
+  socket.on('hit reply', function(msg){
+    console.log(msg);
+  });
 
 
 

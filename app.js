@@ -6,27 +6,57 @@ var redis = require("redis");
 var client = redis.createClient();
 var methodOverride = require("method-override");
 var bodyParser = require("body-parser");
-var game = require("./game.js").startGame(["nick"]);
-
-
-
-io.on('connection', function(socket){
-  socket.on('console log', function(msg){
-
-    io.emit('console log', game.initialDeal());
-    io.emit('console log', game);
-  });
-});
-
-app.get('/', function(req, res){
-  res.render('blackjack');
-});
+var cookieParser = require('cookie-parser');
+// g is the instance of the game
+var g = require("./game.js").startGame(["nick"]);
+var userName = {}
 
 //middleware below
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(methodOverride("_method"));
 app.use(express.static(__dirname + "/public"));
+app.use(cookieParser());
+
+
+
+// Render new user page
+app.get('/newUser', function(req, res){
+ res.render('newUser');
+});
+
+// Enter global chat
+app.get('/blackjack', function(req, res){
+  res.render('blackjack');
+
+userName = req.cookies;
+console.log(userName);
+});
+
+
+
+
+io.on('connection', function(socket){
+  socket.nickname = userName;
+console.log("socket.nickname", socket.nickname);
+
+  socket.on('new game', function(msg){
+    io.emit('new game', g.initialDeal());
+    io.emit('new game', g);
+  });
+
+//eventually we will have to make it so it hits the player who pressed hit.
+  socket.on('hit request',function(msg){
+    io.emit('hit reply', g.hit(0))
+    io.emit('hit reply', g.playersArray[0].hand[g.playersArray[0].hand.length - 1])
+  });
+});
+
+
+app.get('/', function(req, res){
+  res.render('index');
+});
+
 
 var loggedIn = [];
 
@@ -35,15 +65,7 @@ var loggedIn = [];
 //  res.render('index');
 // });
 
-// Render new user page
-app.get('/newUser', function(req, res){
- res.render('newUser');
-});
 
-// Enter global chat
-app.get('/globalchat', function(req, res){
-  res.render('globalchat');
-});
 
 // Create new User
  //validate uniqueness of userName
@@ -60,7 +82,7 @@ app.get('/globalchat', function(req, res){
 
 
 //validates userPass === userName and logs in
- app.post("/globalchat", function(req, res){
+ app.post("/blackjack", function(req, res){
   var getUserPass = function(){
     client.HGET("users", req.body.userName, function(err, reply){
       if (err){
@@ -68,8 +90,7 @@ app.get('/globalchat', function(req, res){
       }
 
       if (req.body.userPass == reply){
-        res.redirect("/globalchat");
-        // set session hash to have user 
+        res.redirect("/blackjack");
       } else {
         console.log("Incorrect UserName or Password");
         res.redirect('/');
