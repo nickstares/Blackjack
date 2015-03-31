@@ -70,7 +70,8 @@ var Player = function(name){
     this.hand = [];
     this.totalValue = 0;
     this.aceCounter = 0;
-    this.bet = 0;
+    this.bet = 10;
+    this.status = "New PLayer";
 };
 
  Player.prototype.totalhand = function(){ 
@@ -117,8 +118,7 @@ var Player = function(name){
    
    if (sortedArr.length === 2 && 
 ((sortedArr[0].valueOf() === 1 && sortedArr[1].valueOf() >= 10)||
-(sortedArr[1].valueOf() === 1 && sortedArr[0].valueOf() >= 10))
- && this.aceCounter === 0) {
+(sortedArr[1].valueOf() === 1 && sortedArr[0].valueOf() >= 10)) && this.aceCounter === 0) {
       this.totalValue += 10;
       this.aceCounter += 1;
    }
@@ -225,7 +225,7 @@ Game.prototype.dealerStatus = function(){
 };
 
 
-//-------------- SUPPORTIVE FUNCTIONS ------------------
+//-------------- SUPPORTIVE FUNCTIONS FOR CHECKFOR WINNER------------------
 
 
 
@@ -259,6 +259,7 @@ Game.prototype.dealerOver16 =  function() {
   return ((21 > x) && (x > 16)); 
 };
 
+//-------------- SUPPORTIVE FUNCTIONS FOR THE GAME------------------
 
 Game.prototype.initialDeal = function() {
   _this = this;
@@ -266,15 +267,6 @@ Game.prototype.initialDeal = function() {
      _this.deal(index,2);
   });
     
-};
-
-Game.prototype.hit = function(playerIndex){
-  this.deal(playerIndex, 1);
-  
-};
-
-Game.prototype.stand = function(){
-this.turn += 1;
 };
 
 
@@ -296,15 +288,137 @@ exports.startGame = function(array){
   return g;    
 };
 
+// -------------------JOIN GAME  ------------------------------
+
+var roomPlayer = [], gameInProcess = false, queue = [];
+
+
+Game.prototype.joinGame = function() {
+  if ((session.name) || (roomPlayer.length > 0 && queue.length > 0)){
+    if (!playerIntheRP()) {
+      roomPlayer.unshift(session.name); 
+    }
+    if (g) {
+        if (gameInProcess) {
+          queue.push(new Player(session.name));
+          this.playersArray[cont].status = "Joined next hand"; 
+          // Send message to the player --> "Joined the next hand" ---------------(Display on Player Side)
+        } else{
+          for (var i = 0; i < queue.length; i++) {
+            this.playersArray.splice(-1,0,(queue[i]));
+          }
+          this.reset();
+          setUpRound();
+        }
+    } else {
+      startGame(roomPlayer);  
+      setUpRound();    
+    }
+  }
+};
+
+Game.prototype.playerIntheRP = function(){
+  for (var i = 0; i < roomPlayer.length; i++) {
+      if (roomPlayer[i] === session.name) {
+        return true;
+      } 
+  }
+  return false;
+};
+
+// ------------------- PLAY ROUND  -------------------------------
+
+Game.prototype.setUpRound = function(){
+  gameInProcess = true;
+  g.initialDeal();
+  this.turn = 0;
+  this.playRound();
+};
+
+Game.prototype.playRound = function(){
+  this.playersArray[turn].money -= this.playersArray[turn].bet;
+  this.playersArray[turn].status = "Your turn"; 
+  this.playTimer();
+};
+
+Game.prototype.playTimer = function(){
+  // displayCardsButtons(this.playersArray[turn]); --------------------------------(Display on Player Side)
+  // Send message to the player --> "Your turn and Display Buttons" ---------------(Display on Player Side) 
+  var timer = setTimeout(function(){
+    this.playersArray[turn].status = "Stand";   
+    this.stand();
+  },10000);
+};
+
+Game.prototype.hit = function(playerIndex){  //-------------------------------(Index comes from Player Side) 
+  this.deal(playerIndex, 1);
+  if (this.playersArray[turn].busted) {
+    this.playersArray[turn].status = "Busted";
+    this.stand();    
+  }else {
+    clearTimeout(timer);
+    playTimer();  
+  } 
+};
+
+Game.prototype.stand = function(){
+// hideCardButtons(this.playersArray[turn]); //----------------------------------------------------(Hide Buttons Player Side) 
+if (this.playersArray[turn].status !== "Busted") {
+  this.playersArray[turn].status = "Stand"; 
+}
+clearTimeout(timer);
+nextTurn();
+};
+
+Game.prototype.nextTurn = function(){
+  this.turn += 1;
+  if (this.playersArray.length-1 > this.turn) {
+    this.playRound();  
+  } else {
+    for (var i = 0; i < playersArray.length-2; i++) {
+      checkForWinner(i);
+    }
+  }
+};
+
+Game.prototype.finishHand = function() {
+  this.gameInProcess = false;
+  // invitePlayersForAnotherRound();------------------------------------------------------------------(Display buttons YES & NO & Message "Play Again?")
+  var timer = setTimeout(function(){
+    joinGame();
+  },10000);
+
+};
+
+Game.prototype.logOut = function () {
+  if (this.roomPlayer.length === 1 ) {
+    g = null;
+  }
+  for (var i = 0; i < roomPlayer.length; i++) {
+    roomPlayer.splice(roomPlayer[i],1);
+  }
+  for (var j = 0; j < playersArray.length; j++) {
+    playersArray.splice(playersArray[j],1);
+  }
+  //Delete Cookie ---------------------------------------------------(NICK)
+};
 
 
 
+// ------------------- RESET GAME  ------------------------------
 
+Game.prototype.reset = function(){
+      for (var i = 0; i < this.playersArray.length; i++) {
+        this.playersArray[i].aceCounter = 0;  
+        this.playersArray[i].hand = [];
+        this.playersArray[i].bet = 10;
+        this.currentDeck = new Deck();
+      }
+};
 
+   
+ 
 
-
-   // everything function closes
-
-
-
- // });
+//  Kick bastards out of the game
+//  Change session.name for the right syntax
+// Camilo Added --> Player --> this.status --> "New Player", "Your Turn", "Hit", "Stand", "Busted", "Joined next hand"
