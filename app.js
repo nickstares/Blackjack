@@ -368,14 +368,9 @@ Game.prototype.playRound = function(){
 };
 
 Game.prototype.hidePlayerHsButtons = function() {
-
-    if  (this.playersArray.length -2 >= this.turn){
-	console.log("--------------------")
-	console.log("this condition is being met")
-	console.log("--------------------")
-	userHash[this.playersArray[this.turn].name].emit('hide',"HI!!!!!");
+  if  (this.playersArray.length -2 >= this.turn){
+  	userHash[this.playersArray[this.turn].name].emit('hide',"HI!!Nick!");
 	}
-
 };
 
 Game.prototype.hideAllHsButtons = function() {
@@ -390,30 +385,18 @@ Game.prototype.playTimer = function(){
   // Send message to the player --> "Your this.turn and Display Buttons" ---------------(Display on Player Side) 
   // displayButtonsToPlayer();
   count1 = 11; // Required dont delete
-  
-
-
   this.intervalTrigger();
   var _this = this;
-<<<<<<< HEAD
+
   this.timerPlay = setTimeout(function(){
-=======
-  var timerPlay = setTimeout(function(){
->>>>>>> b045864a512ecb01375d797c21d17a335ac00fba
-    console.log("first timer Reached after 2 secs");
-    if(! _this.playersArray[_this.turn ]=== undefined)
+  // var timerPlay = setTimeout(function(){
+  console.log("first timer Reached after 2 secs");
     _this.playersArray[_this.turn].status = "Stand";   
     _this.stand();
-<<<<<<< HEAD
-  },5000);
-=======
->>>>>>> b045864a512ecb01375d797c21d17a335ac00fba
-
     clearInterval(_this.intervalId);
     // count1 = 11;
     console.log("Interval cleared");
-  },11000);
-
+    },11000);
 };
 
 Game.prototype.intervalTrigger = function(){
@@ -430,20 +413,14 @@ Game.prototype.callCounter = function(){
 };
   
 
-
 Game.prototype.hit = function(){  
-
   this.deal(this.turn, 1);
   if (this.playersArray[this.turn].busted()) {
     this.playersArray[this.turn].status = "Busted";
     this.stand();    
   }else {
-
     clearTimeout(this.timerPlay);
-
-
     this.playTimer();  
-
   } 
 };
 
@@ -473,9 +450,7 @@ Game.prototype.nextTurn = function(){
     console.log("length ",this.playersArray.length);
     for (var i = 0; i <= this.playersArray.length-2; i++) {
       console.log("Turn: " ,i );  
-
       this.checkForWinner(i);
-      
     }
   this.finishHand();
   }
@@ -576,7 +551,7 @@ var userHash = {};
 
 
 
-console.log(userHash)
+    console.log(userHash);
     io.on('connection', function(socket){
 	    socket.on("join game", function(){
 		    console.log("Its connecting");

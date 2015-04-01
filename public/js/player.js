@@ -18,12 +18,15 @@ $(document).ready(function() {
   socket.on("set time", function(msg){
     $('#time1').text(msg + " scs");
     console.log(msg);
-    if (msg === 3) {
-      $('.hitb').attr("disabled",true);
-    }  
   });
 
+  socket.on('hide', function(msg){
+    $('.hitb').attr("disabled",true);
+    console.log("Worked");
+    // console.log(msg);
 
+    
+  }); 
 
 
 
@@ -40,10 +43,7 @@ $(document).ready(function() {
 	  socket.emit('stand request');
       });
 
-  socket.on('hide', function(msg){
-	  console.log(msg);
-
-      }); 
+  
 
 
   // socket.on('player joined next hand', function(msg) {
