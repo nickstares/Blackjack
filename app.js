@@ -303,7 +303,7 @@ Game.prototype.clearDeck = function(){
 // -------------------JOIN GAME  ------------------------------
 
 
-var roomPlayer = [], gameInProcess = false, queue = [], g = null;
+var roomPlayer = [], gameInProcess = false, queue = [], g = null, count1 = 0;
 
 // -------------------START GAME  ------------------------------
 var startGame = function(array){
@@ -370,27 +370,48 @@ Game.prototype.playTimer = function(){
   // displayCardsButtons(this.playersArray[this.turn]); --------------------------------(Display on Player Side)
   // Send message to the player --> "Your this.turn and Display Buttons" ---------------(Display on Player Side) 
   // displayButtonsToPlayer();
+  count1 = 0; // Required dont delete
   
 
+
+  this.intervalTrigger();
   var _this = this;
-   timerPlay = setTimeout(function(){
+  var timerPlay = setTimeout(function(){
     console.log("first timer Reached after 2 secs");
     _this.playersArray[_this.turn].status = "Stand";   
     _this.stand();
-  },2000);
+
+    clearInterval(_this.intervalId);
+    count1 = 0;
+    console.log("Interval cleared");
+  },5000);
 
 };
 
-Game.prototype.hit = function(playerIndex){  //-------------------------------(Index comes from Player Side) 
-  this.deal(playerIndex, 1);
+Game.prototype.intervalTrigger = function(){
+  _this = this;
+  this.intervalId = setInterval(function() {
+    _this.callCounter();
+  },1000);
+};
+
+Game.prototype.callCounter = function(){  
+  console.log(count1);
+  count1 += 1;
+  io.emit("set time", count1 );
+};
+  
+
+Game.prototype.hit = function(){  
+  this.deal(this.turn, 1);
   if (this.playersArray[this.turn].busted()) {
     this.playersArray[this.turn].status = "Busted";
     this.stand();    
   }else {
 
-    clearTimeout(timerPlay);
+    clearTimeout(this.timerPlay);
 
-    playTimer();  
+    this.playTimer();  
   } 
 };
 
@@ -419,6 +440,7 @@ Game.prototype.nextTurn = function(){
     console.log("length ",this.playersArray.length);
     for (var i = 0; i <= this.playersArray.length-2; i++) {
       console.log("Turn: " ,i );  
+      
       this.checkForWinner(i);
       
     }
@@ -440,7 +462,7 @@ Game.prototype.finishHand = function() {
       joinGame();
     }
     
-  },2000);
+  },5000);
 
 };
 
@@ -454,7 +476,7 @@ Game.prototype.logOut = function () {
   for (var j = 0; j < playersArray.length; j++) {
     playersArray.splice(playersArray[j],1);
   }
-  //Delete Cookie ---------------------------------------------------(NICK)
+  
 };
 
 
@@ -500,33 +522,32 @@ userName = req.cookies['username'];
 });
 
 
-
-
-
+// ---------------------LISTENERS
 var userHash = {};
-io.on('connection', function(socket){
-  socket.on("join game", function(){
-  console.log("Its connecting");
-  joinGame();
-  });
-  socket.nickname = userName;
-// console.log(userName)
-  userHash[userName] = socket;
+  io.on('connection', function(socket){
+    socket.on("join game", function(){
+    console.log("Its connecting");
+    joinGame();
+    });
+    socket.nickname = userName;
+    // console.log(userName)
+    userHash[userName] = socket;
+    // console.log(userHash["nick"])
+    userHash[userName].emit("hello world", "hello world " + userName );
 
-// console.log(userHash["nick"])
-userHash[userName].emit("hello world", "hello world " + userName );
-
-
+    // --------TEST -----------------
+    // io.emit("set time", count1 );
+    // console.log("Timer Camilo", timeTest());
 });
 
 
 
-
+// ---------------------SHOWS INDEX PAGE
 app.get('/', function(req, res){
   res.render('index');
 });
 
-
+// ---------------------POST ROUTE FOR CREATING A NEW USER
 // Create new User
  //validate uniqueness of userName
  app.post("/newuser", function(req, res){
@@ -540,7 +561,7 @@ app.get('/', function(req, res){
  });
 
 
-
+// ---------------------VALIDATES THE RIGHT USER NAME AND PASSWORND AND REDIRECTS TO GAME 
 //validates userPass === userName and logs in
  app.post("/blackjack", function(req, res){
   var getUserPass = function(){
@@ -548,7 +569,6 @@ app.get('/', function(req, res){
       if (err){
         console.log("Could not query the database");
       }
-
       if (req.body.userPass == reply){
         res.redirect("/blackjack");
       } else {
@@ -561,11 +581,15 @@ app.get('/', function(req, res){
 });
 
 
-var usersLoggedIn = [];
 
-
-
-//start the server
+// ---------------------START THE SERVER --------------------
 http.listen(3000, function(){
   console.log('listening on *:3000');
 });
+// ---------------------NOTHING AFTER THIS --------------------
+
+
+
+
+
+
