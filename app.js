@@ -303,7 +303,7 @@ Game.prototype.clearDeck = function(){
 // -------------------JOIN GAME  ------------------------------
 
 
-var roomPlayer = [], gameInProcess = false, queue = [], g = null, count1 = 0;
+var roomPlayer = [], gameInProcess = false, queue = [], g = null;
 
 // -------------------START GAME  ------------------------------
 var startGame = function(array){
@@ -370,7 +370,7 @@ Game.prototype.playTimer = function(){
   // displayCardsButtons(this.playersArray[this.turn]); --------------------------------(Display on Player Side)
   // Send message to the player --> "Your this.turn and Display Buttons" ---------------(Display on Player Side) 
   // displayButtonsToPlayer();
-  count1 = 0; // Required dont delete
+  count1 = 11; // Required dont delete
   
 
 
@@ -382,9 +382,9 @@ Game.prototype.playTimer = function(){
     _this.stand();
 
     clearInterval(_this.intervalId);
-    count1 = 0;
+    // count1 = 11;
     console.log("Interval cleared");
-  },5000);
+  },11000);
 
 };
 
@@ -397,7 +397,7 @@ Game.prototype.intervalTrigger = function(){
 
 Game.prototype.callCounter = function(){  
   console.log(count1);
-  count1 += 1;
+  count1 -= 1;
   io.emit("set time", count1 );
 };
   

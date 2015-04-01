@@ -26,8 +26,11 @@ $(document).ready(function() {
   //----------------------SOCKET LISTENERS
 
   socket.on("set time", function(msg){
-    // $('.time').append(msg);
+    $('#time1').text(msg + " scs");
     console.log(msg);
+    if (msg === 3) {
+      $('.hitb').attr("disabled",true);
+    }  
   });
 
 
