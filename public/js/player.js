@@ -60,9 +60,8 @@ $(document).ready(function() {
 
 var socket = io();  
 
-$('#newGame').on("submit", function(e){
-  e.preventDefault();
-  socket.emit('foo');
+$('#joinGame').on("submit", function(e){
+  socket.emit('join game');
 });
 
 socket.on('bar', function(msg){
