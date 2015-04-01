@@ -58,15 +58,16 @@ $(document).ready(function() {
 
 
 
-var socket = io();  
+  var socket = io();  
 
-$('#joinGame').on("submit", function(e){
-  socket.emit('join game');
-});
+  $('#newGame').on("submit", function(e){
+    e.preventDefault();
+    socket.emit('foo');
+  });
 
-socket.on('bar', function(msg){
-console.log(msg);
-});
+  socket.on('bar', function(msg){
+    console.log(msg);
+  });
 
   $('#hit').on("submit", function(e){
     e.preventDefault();
@@ -77,15 +78,20 @@ console.log(msg);
     console.log(msg);
   });
 
-socket.on('player joined next hand', function(msg) {
-// append msg to wherever you want it.
-});
+  socket.on('player joined next hand', function(msg) {
+    // append msg to wherever you want it.
+  });
 
-socket.on('hello world', function(msg){
-console.log(msg);
 
-});
+  socket.on('show buttons to user', function(){
+    $('body').append
+  });
 
+            socket.on('hello world', function(msg){
+              console.log(msg);
+
+            });
+            
 
 
 

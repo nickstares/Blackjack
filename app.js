@@ -7,7 +7,7 @@ var client = redis.createClient();
 var methodOverride = require("method-override");
 var bodyParser = require("body-parser");
 var cookieParser = require('cookie-parser');
-var userName = {};
+var userName = {}
 
 //middleware below
 app.set("view engine", "ejs");
@@ -187,10 +187,10 @@ Game.prototype.checkForWinner = function(index) {
   // Instance of the Dealer
   var dealer = this.playersArray[this.playersArray.length-1]; 
   var player = this.playersArray[index];
-    ;
+    
     // Player busted  
     if (player.totalValue > 21) {
-        player.bet = 0;;
+        player.bet = 0;
         console.log("Player Busted (90)");
     // Dealer Wins with BlackJack   
     } else if (dealer.blackjack() && !(player.blackjack())) {
@@ -213,7 +213,7 @@ Game.prototype.checkForWinner = function(index) {
       console.log("Player Wins - Dealer Busted (110)");
     // Dealer Win   
     } else if ((player.totalValue < dealer.totalValue) && (dealer.totalValue < 22)){
-      player.bet = 0;;
+      player.bet = 0;
       console.log("Dealer Wins ");
     // Tie Game    
     } else if (player.totalValue === dealer.totalValue) {
@@ -296,52 +296,49 @@ Game.prototype.clearDeck = function(){
   // console.log(this.currentDeck.cards);
 };
 
+// -------------------START GAME  ------------------------------
 
-
+startGame = function(array){
+  var g = new Game(array);
+  return g;    
+};
 
 // -------------------JOIN GAME  ------------------------------
 
 
-var roomPlayer = [], gameInProcess = false, queue = [], g = null;
+var roomPlayer = [], gameInProcess = false, queue = [];
 
-// -------------------START GAME  ------------------------------
-var startGame = function(array){
-  g = new Game(array);
-  return g;    
-};
+Game.prototype.joinGame = function() {
 
-
-var joinGame = function() {
-console.log("join game is being called");
-  if ((userName) || (roomPlayer.length > 0 && queue.length > 0)){
+  if ((session.name) || (roomPlayer.length > 0 && queue.length > 0)){
     if (!playerIntheRP()) {
-      roomPlayer.unshift(userName); 
+      roomPlayer.unshift(session.name); 
     }
-    if (g !== null) {
+    if (g) {
         if (gameInProcess) {
-          queue.push(new Player(userName));
-          g.playersArray[cont].status = "Joined next hand"; 
-          io.emit('player joined next hand', g.playersArray[cont].status);
+          queue.push(new Player(session.name));
+          this.playersArray[cont].status = "Joined next hand"; 
+          io.emit('player joined next hand', this.playersArray[cont].status)
  
  // Send message to the player --> "Joined the next hand" ---------------(Display on Player Side)
           
         } else{
           for (var i = 0; i < queue.length; i++) {
-            g.playersArray.splice(-1,0,(queue[i]));
+            this.playersArray.splice(-1,0,(queue[i]));
           }
-          g.reset();
-          g.setUpRound();
+          this.reset();
+          setUpRound();
         }
     } else {
       startGame(roomPlayer);  
-      g.setUpRound();    
+      setUpRound();    
     }
   }
 };
 
-playerIntheRP = function(){
+Game.prototype.playerIntheRP = function(){
   for (var i = 0; i < roomPlayer.length; i++) {
-      if (roomPlayer[i] === userName) {
+      if (roomPlayer[i] === session.name) {
         return true;
       } 
   }
@@ -358,45 +355,41 @@ Game.prototype.setUpRound = function(){
 };
 
 Game.prototype.playRound = function(){
-  this.playersArray[this.turn].money -= this.playersArray[this.turn].bet;
-  this.playersArray[this.turn].status = "Your this.turn"; 
+  this.playersArray[turn].money -= this.playersArray[turn].bet;
+  this.playersArray[turn].status = "Your turn"; 
   this.playTimer();
 };
 
 Game.prototype.playTimer = function(){
 
-  // displayCardsButtons(this.playersArray[this.turn]); --------------------------------(Display on Player Side)
-  // Send message to the player --> "Your this.turn and Display Buttons" ---------------(Display on Player Side) 
+  // displayCardsButtons(this.playersArray[turn]); --------------------------------(Display on Player Side)
+  // Send message to the player --> "Your turn and Display Buttons" ---------------(Display on Player Side) 
   // displayButtonsToPlayer();
-  var _this = this;
-   timerPlay = setTimeout(function(){
-    console.log("first timer");
-    _this.playersArray[_this.turn].status = "Stand";   
-    _this.stand();
-  },2000);
+
+  var timer = setTimeout(function(){
+    this.playersArray[turn].status = "Stand";   
+    this.stand();
+  },10000);
 };
 
 Game.prototype.hit = function(playerIndex){  //-------------------------------(Index comes from Player Side) 
   this.deal(playerIndex, 1);
-  if (this.playersArray[this.turn].busted()) {
-    this.playersArray[this.turn].status = "Busted";
+  if (this.playersArray[turn].busted) {
+    this.playersArray[turn].status = "Busted";
     this.stand();    
   }else {
-    clearTimeout(timerPlay);
+    clearTimeout(timer);
     playTimer();  
   } 
 };
 
 Game.prototype.stand = function(){
-// hideButtons(this.playersArray[this.turn]); //----------------------------------------------------(Hide Buttons Player Side) 
-console.log("stand is being called");
-if (this.playersArray[this.turn].status !== "Busted") {
-  this.playersArray[this.turn].status = "Stand"; 
+// hideButtons(this.playersArray[turn]); //----------------------------------------------------(Hide Buttons Player Side) 
+if (this.playersArray[turn].status !== "Busted") {
+  this.playersArray[turn].status = "Stand"; 
 }
-console.log(timerPlay);
-clearTimeout(timerPlay);
-console.log("after",timerPlay);
-this.nextTurn();
+clearTimeout(timer);
+nextTurn();
 };
 
 Game.prototype.nextTurn = function(){
@@ -404,8 +397,8 @@ Game.prototype.nextTurn = function(){
   if (this.playersArray.length-1 > this.turn) {
     this.playRound();  
   } else {
-    for (var i = 0; i < this.playersArray.length-2; i++) {
-      this.checkForWinner(i);
+    for (var i = 0; i < playersArray.length-2; i++) {
+      checkForWinner(i);
     }
   }
 };
@@ -415,11 +408,9 @@ Game.prototype.finishHand = function() {
   this.gameInProcess = false;
   this.invitePlayers();
   // invitePlayersForAnotherRound();------------------------------------------------------------------(Display buttons YES & NO & Message "Play Again?")
-  console.log("second timer 1");
-  var finishTimer = setTimeout(function(){
-    console.log("second timer 2");
+  var timer = setTimeout(function(){
     joinGame();
-  },2000);
+  },10000);
 
 };
 
@@ -453,8 +444,8 @@ Game.prototype.reset = function(){
  
 
 //  Kick bastards out of the game
-//  Change userName for the right syntax
-// Camilo Added --> Player --> this.status --> "New Player", "Your this.turn", "Hit", "Stand", "Busted", "Joined next hand"
+//  Change session.name for the right syntax
+// Camilo Added --> Player --> this.status --> "New Player", "Your Turn", "Hit", "Stand", "Busted", "Joined next hand"
 
 
 // ----------------------------------------------------------------------------
@@ -478,23 +469,28 @@ userName = req.cookies['username'];
 
 });
 
-
-
-
-
-var userHash = {};
+var userHash = {}
 io.on('connection', function(socket){
-  socket.on("join game", function(){
-  joinGame();
-  });
+  
   socket.nickname = userName;
 // console.log(userName)
-  userHash[userName] = socket;
+  userHash[userName] = socket
+
+
+
+  socket.on('foo', function(msg){
+    io.emit('show buttons to user', startGame());
+    io.emit('show buttons to user');
+  });
 
 // console.log(userHash["nick"])
-userHash[userName].emit("hello world", "hello world " + userName );
 
 
+//eventually we will have to make it so it hits the player who pressed hit.
+  socket.on('hit request',function(msg){
+    io.emit('hit reply', g.hit(0))
+    io.emit('hit reply', g.playersArray[0].hand[g.playersArray[0].hand.length - 1])
+  });
 });
 
 
