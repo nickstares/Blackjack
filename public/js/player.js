@@ -59,12 +59,13 @@ $(document).ready(function() {
 
 
 var socket = io();  
+
 $('#newGame').on("submit", function(e){
   e.preventDefault();
-  socket.emit('new game', "request");
+  socket.emit('foo');
 });
 
-socket.on('new game', function(msg){
+socket.on('bar', function(msg){
 console.log(msg);
 });
 
@@ -76,6 +77,15 @@ console.log(msg);
   socket.on('hit reply', function(msg){
     console.log(msg);
   });
+
+socket.on('player joined next hand', function(msg) {
+// append msg to wherever you want it.
+});
+
+socket.on('hello world', function(msg){
+console.log(msg);
+
+});
 
 
 

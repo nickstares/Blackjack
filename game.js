@@ -290,10 +290,12 @@ exports.startGame = function(array){
 
 // -------------------JOIN GAME  ------------------------------
 
+
 var roomPlayer = [], gameInProcess = false, queue = [];
 
-
 Game.prototype.joinGame = function() {
+
+
   if ((session.name) || (roomPlayer.length > 0 && queue.length > 0)){
     if (!playerIntheRP()) {
       roomPlayer.unshift(session.name); 
