@@ -1,3 +1,4 @@
+
 var express = require('express');
 var app = express();
 var http = require('http').Server(app);
@@ -7,6 +8,7 @@ var client = redis.createClient();
 var methodOverride = require("method-override");
 var bodyParser = require("body-parser");
 var cookieParser = require('cookie-parser');
+var userHash = {};
 var userName = {};
 
 //middleware below
@@ -365,6 +367,23 @@ Game.prototype.playRound = function(){
   this.playTimer();
 };
 
+Game.prototype.hidePlayerHsButtons = function() {
+
+    if  (this.playersArray.length -2 >= this.turn){
+	console.log("--------------------")
+	console.log("this condition is being met")
+	console.log("--------------------")
+	userHash[this.playersArray[this.turn].name].emit('hide',"HI!!!!!");
+	}
+
+};
+
+Game.prototype.hideAllHsButtons = function() {
+    var msg = "foo";
+    io.emit("hide hit and stand buttons", msg);
+};
+
+ 
 Game.prototype.playTimer = function(){
 
   // displayCardsButtons(this.playersArray[this.turn]); --------------------------------(Display on Player Side)
@@ -373,34 +392,36 @@ Game.prototype.playTimer = function(){
   
 
   var _this = this;
-   timerPlay = setTimeout(function(){
+  this.timerPlay = setTimeout(function(){
     console.log("first timer Reached after 2 secs");
+    if(! _this.playersArray[_this.turn ]=== undefined)
     _this.playersArray[_this.turn].status = "Stand";   
     _this.stand();
-  },2000);
+  },5000);
 
 };
 
-Game.prototype.hit = function(playerIndex){  //-------------------------------(Index comes from Player Side) 
-  this.deal(playerIndex, 1);
+Game.prototype.hit = function(){  //-------------------------------(Index comes from Player Side) 
+  this.deal(this.turn, 1);
   if (this.playersArray[this.turn].busted()) {
     this.playersArray[this.turn].status = "Busted";
     this.stand();    
   }else {
 
-    clearTimeout(timerPlay);
+    clearTimeout(this.timerPlay);
 
-    playTimer();  
+   this. playTimer();  
   } 
 };
 
 Game.prototype.stand = function(){
-// hideButtons(this.playersArray[this.turn]); //----------------------------------------------------(Hide Buttons Player Side) 
-if (this.playersArray[this.turn].status !== "Busted") {
-  this.playersArray[this.turn].status = "Stand"; 
-}
-
-this.nextTurn();
+    this.hidePlayerHsButtons();
+    console.log("this.playersArray[0]", this.playersArray[0]);
+    console.log("this.turn", this.turn);
+    if (this.playersArray[this.turn].status !== "Busted") {
+	this.playersArray[this.turn].status = "Stand"; 
+    }
+    this.nextTurn();
 };
 
 Game.prototype.nextTurn = function(){
@@ -419,6 +440,7 @@ Game.prototype.nextTurn = function(){
     console.log("length ",this.playersArray.length);
     for (var i = 0; i <= this.playersArray.length-2; i++) {
       console.log("Turn: " ,i );  
+      console.log(g.playersArray[0].hand)
       this.checkForWinner(i);
       
     }
@@ -440,7 +462,7 @@ Game.prototype.finishHand = function() {
       joinGame();
     }
     
-  },2000);
+  },5000);
 
 };
 
@@ -503,23 +525,24 @@ userName = req.cookies['username'];
 
 
 
-var userHash = {};
-io.on('connection', function(socket){
-  socket.on("join game", function(){
-  console.log("Its connecting");
-  joinGame();
-  });
-  socket.nickname = userName;
-// console.log(userName)
-  userHash[userName] = socket;
 
-// console.log(userHash["nick"])
-userHash[userName].emit("hello world", "hello world " + userName );
-
-
-});
-
-
+console.log(userHash)
+    io.on('connection', function(socket){
+	    socket.on("join game", function(){
+		    console.log("Its connecting");
+		    joinGame();
+		});
+	    socket.nickname = userName;
+	    userHash[userName] = socket;
+	    // this socket listens for the hit request
+	    socket.on("hit request", function(){
+		    g.hit();
+		});
+	    socket.on("stand request", function(){
+		    g.stand();
+		});
+	    userHash[userName].emit("hello world", "hello world " + userName);
+		});
 
 
 app.get('/', function(req, res){
