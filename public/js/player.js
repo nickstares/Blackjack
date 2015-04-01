@@ -1,9 +1,4 @@
 $(document).ready(function() { 
-//     $('#hit').on("submit", function(e){
-//       e.preventDefault();
-//       g.hit(0);
-//       console.log("Busted? ", g.playersArray[0].busted());
-//     });
 
 //     $('#stand').on("submit", function(e){
 //       e.preventDefault();
@@ -59,16 +54,38 @@ $(document).ready(function() {
 
 
 // //------------------- JQUERY -----------------------
+
+
+
+
 var socket = io();  
+
 $('#newGame').on("submit", function(e){
   e.preventDefault();
-  socket.emit('console log', "request");
+  socket.emit('foo');
 });
 
-socket.on('console log', function(msg){
+socket.on('bar', function(msg){
 console.log(msg);
 });
 
+  $('#hit').on("submit", function(e){
+    e.preventDefault();
+    socket.emit('hit request');
+  });
+
+  socket.on('hit reply', function(msg){
+    console.log(msg);
+  });
+
+socket.on('player joined next hand', function(msg) {
+// append msg to wherever you want it.
+});
+
+socket.on('hello world', function(msg){
+console.log(msg);
+
+});
 
 
 
