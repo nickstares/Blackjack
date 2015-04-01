@@ -79,7 +79,7 @@ Deck.prototype = {
 
 // -------------------PLAYER CLASS ------------------------------
 
-var Player = function(name){
+var Player = function(name, status){
     this.name = name;
     this.money = 100;
     this.hand = [];
@@ -174,7 +174,7 @@ var Game = function(players) {
 
 Game.prototype.deal = function(index, cards){ 
     // this sets the current hand equal to the hand concatinated with the cards drawn
-   return this.playersArray[index].hand = this.playersArray[index].hand.concat(this.currentDeck.draw(cards));
+    this.playersArray[index].hand = this.playersArray[index].hand.concat(this.currentDeck.draw(cards));
     this.playersArray[index].totalhand();
 
 };
@@ -187,10 +187,10 @@ Game.prototype.checkForWinner = function(index) {
   // Instance of the Dealer
   var dealer = this.playersArray[this.playersArray.length-1]; 
   var player = this.playersArray[index];
-    ;
+    
     // Player busted  
     if (player.totalValue > 21) {
-        player.bet = 0;;
+        player.bet = 0;
         console.log("Player Busted (90)");
     // Dealer Wins with BlackJack   
     } else if (dealer.blackjack() && !(player.blackjack())) {
@@ -213,7 +213,7 @@ Game.prototype.checkForWinner = function(index) {
       console.log("Player Wins - Dealer Busted (110)");
     // Dealer Win   
     } else if ((player.totalValue < dealer.totalValue) && (dealer.totalValue < 22)){
-      player.bet = 0;;
+      player.bet = 0;
       console.log("Dealer Wins ");
     // Tie Game    
     } else if (player.totalValue === dealer.totalValue) {
@@ -234,7 +234,7 @@ Game.prototype.dealerStatus = function(){
     if (!this.playersArray[this.playersArray.length -1].blackjack()){
       this.deal(this.playersArray.length-1,1); // Check for hit 
       console.log("card delt");
-      
+      console.log(this.playersArray[1].hand);
     }
   }
 };
@@ -262,7 +262,7 @@ Player.prototype.under21 = function() {
 };
 
 Game.prototype.dealerUnder17 =  function() {
-  // console.log(this);
+  console.log("Here is another problem " + this.totalValue);
   // return this.playersArray[this.playersArray.length -1].totalhand() < 17;
   return this.playersArray[this.playersArray.length -1].totalValue < 17;
 };
@@ -320,10 +320,8 @@ console.log("join game is being called");
     if (g !== null) {
         if (gameInProcess) {
 
-          queue.push(new Player(userName));
-
-          g.playersArray[this.turn].status = "Joined next hand"; 
-          io.emit('player joined next hand', g.playersArray[cont].status);
+          queue.push(new Player(userName, "Joined next hand"));
+          // io.emit('player joined next hand', g.playersArray[cont].status);
  
  // Send message to the player --> "Joined the next hand" ---------------(Display on Player Side)
           
@@ -360,6 +358,7 @@ Game.prototype.setUpRound = function(){
 };
 
 Game.prototype.playRound = function(){
+  console.log(g);
   this.playersArray[this.turn].money -= this.playersArray[this.turn].bet;
   this.playersArray[this.turn].status = "Your this.turn"; 
   this.playTimer();
@@ -370,10 +369,7 @@ Game.prototype.playTimer = function(){
   // displayCardsButtons(this.playersArray[this.turn]); --------------------------------(Display on Player Side)
   // Send message to the player --> "Your this.turn and Display Buttons" ---------------(Display on Player Side) 
   // displayButtonsToPlayer();
-  //  this.timer = setTimeout(function(){
-  //   this.playersArray[turn].status = "Stand";   
-  //   this.stand();
-  // },10000);
+  
 
   var _this = this;
    timerPlay = setTimeout(function(){
@@ -417,8 +413,8 @@ Game.prototype.nextTurn = function(){
     console.log("Next Turn"); 
   } else {
     
-    for (var i = 0; i <= this.playersArray.length-1; i++) {
-      // this.checkForWinner(i);
+    for (var i = 0; i < this.playersArray.length-2; i++) {
+      this.checkForWinner(i);
       console.log("Next Turn Test");
     }
   this.finishHand();
