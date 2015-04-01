@@ -70,7 +70,6 @@ $(document).ready(function() {
   });
 
   $('#hit').on("submit", function(e){
-    e.preventDefault();
     socket.emit('hit request');
   });
 
@@ -78,20 +77,25 @@ $(document).ready(function() {
     console.log(msg);
   });
 
+  $('#stand').on("submit", function(){
+    socket.emit('stand request');
+  });
+
+
+
   socket.on('player joined next hand', function(msg) {
     // append msg to wherever you want it.
   });
-
 
   socket.on('show buttons to user', function(){
     $('body').append
   });
 
-            socket.on('hello world', function(msg){
-              console.log(msg);
+  socket.on('hello world', function(msg){
+    console.log(msg);
 
-            });
-            
+  });
+  
 
 
 
