@@ -430,9 +430,11 @@ Game.prototype.callCounter = function(){
 };
   
 
-
+<<<<<<< HEAD
+Game.prototype.hit = function(){  //-------------------------------(Index comes from Player Side) 
+=======
 Game.prototype.hit = function(){  
-
+>>>>>>> b045864a512ecb01375d797c21d17a335ac00fba
   this.deal(this.turn, 1);
   if (this.playersArray[this.turn].busted()) {
     this.playersArray[this.turn].status = "Busted";
@@ -441,9 +443,11 @@ Game.prototype.hit = function(){
 
     clearTimeout(this.timerPlay);
 
-
+<<<<<<< HEAD
+   this. playTimer();  
+=======
     this.playTimer();  
-
+>>>>>>> b045864a512ecb01375d797c21d17a335ac00fba
   } 
 };
 
@@ -473,7 +477,11 @@ Game.prototype.nextTurn = function(){
     console.log("length ",this.playersArray.length);
     for (var i = 0; i <= this.playersArray.length-2; i++) {
       console.log("Turn: " ,i );  
-
+<<<<<<< HEAD
+      console.log(g.playersArray[0].hand)
+=======
+      
+>>>>>>> b045864a512ecb01375d797c21d17a335ac00fba
       this.checkForWinner(i);
       
     }
@@ -555,7 +563,10 @@ userName = req.cookies['username'];
 });
 
 
+<<<<<<< HEAD
 
+
+=======
 // ---------------------LISTENERS
 var userHash = {};
   io.on('connection', function(socket){
@@ -573,7 +584,7 @@ var userHash = {};
     // io.emit("set time", count1 );
     // console.log("Timer Camilo", timeTest());
 });
-
+>>>>>>> b045864a512ecb01375d797c21d17a335ac00fba
 
 
 console.log(userHash)
