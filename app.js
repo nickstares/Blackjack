@@ -298,7 +298,7 @@ Game.prototype.clearDeck = function(){
 
 // -------------------START GAME  ------------------------------
 
-startGame = function(array){
+var startGame = function(array){
   var g = new Game(array);
   return g;    
 };
@@ -308,7 +308,7 @@ startGame = function(array){
 
 var roomPlayer = [], gameInProcess = false, queue = [];
 
-Game.prototype.joinGame = function() {
+var joinGame = function() {
 
   if ((session.name) || (roomPlayer.length > 0 && queue.length > 0)){
     if (!playerIntheRP()) {
@@ -317,21 +317,21 @@ Game.prototype.joinGame = function() {
     if (g) {
         if (gameInProcess) {
           queue.push(new Player(session.name));
-          this.playersArray[cont].status = "Joined next hand"; 
-          io.emit('player joined next hand', this.playersArray[cont].status)
+          g.playersArray[cont].status = "Joined next hand"; 
+          io.emit('player joined next hand', g.playersArray[cont].status);
  
  // Send message to the player --> "Joined the next hand" ---------------(Display on Player Side)
           
         } else{
           for (var i = 0; i < queue.length; i++) {
-            this.playersArray.splice(-1,0,(queue[i]));
+            g.playersArray.splice(-1,0,(queue[i]));
           }
-          this.reset();
-          setUpRound();
+          g.reset();
+          g.setUpRound();
         }
     } else {
       startGame(roomPlayer);  
-      setUpRound();    
+      g.setUpRound();    
     }
   }
 };
@@ -366,7 +366,7 @@ Game.prototype.playTimer = function(){
   // Send message to the player --> "Your turn and Display Buttons" ---------------(Display on Player Side) 
   // displayButtonsToPlayer();
 
-  var timer = setTimeout(function(){
+   this.timer = setTimeout(function(){
     this.playersArray[turn].status = "Stand";   
     this.stand();
   },10000);
@@ -378,7 +378,7 @@ Game.prototype.hit = function(playerIndex){  //-------------------------------(I
     this.playersArray[turn].status = "Busted";
     this.stand();    
   }else {
-    clearTimeout(timer);
+    clearTimeout(this.timer);
     playTimer();  
   } 
 };
