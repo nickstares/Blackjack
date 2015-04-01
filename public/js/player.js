@@ -60,9 +60,9 @@ $(document).ready(function() {
 
   var socket = io();  
 
-  $('#newGame').on("submit", function(e){
-    e.preventDefault();
-    socket.emit('foo');
+  $('#joinGame').on("submit", function(e){
+    // e.preventDefault();
+    socket.emit("join game");
   });
 
   socket.on('bar', function(msg){
@@ -77,6 +77,7 @@ $(document).ready(function() {
     console.log(msg);
   });
 
+
   $('#stand').on("submit", function(){
     socket.emit('stand request');
   });
@@ -87,9 +88,9 @@ $(document).ready(function() {
     // append msg to wherever you want it.
   });
 
-  socket.on('show buttons to user', function(){
-    $('body').append
-  });
+  // socket.on('show buttons to user', function(){
+  //   $('body').append
+  // });
 
   socket.on('hello world', function(msg){
     console.log(msg);

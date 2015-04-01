@@ -81,7 +81,7 @@ Deck.prototype = {
 
 var Player = function(name, status){
     this.name = name;
-    this.money = 100;
+    this.money = 30;
     this.hand = [];
     this.totalValue = 0;
     this.aceCounter = 0;
@@ -183,6 +183,7 @@ Game.prototype.deal = function(index, cards){
 // -------------------CHECK FOR WINNER -----------------
 
 Game.prototype.checkForWinner = function(index) {
+  
   this.dealerStatus();
   // Instance of the Dealer
   var dealer = this.playersArray[this.playersArray.length-1]; 
@@ -233,8 +234,8 @@ Game.prototype.dealerStatus = function(){
   while (this.dealerUnder17()){
     if (!this.playersArray[this.playersArray.length -1].blackjack()){
       this.deal(this.playersArray.length-1,1); // Check for hit 
-      console.log("card delt");
-      console.log(this.playersArray[1].hand);
+      // console.log("card delt");
+      // console.log(this.playersArray[1].hand);
     }
   }
 };
@@ -262,7 +263,7 @@ Player.prototype.under21 = function() {
 };
 
 Game.prototype.dealerUnder17 =  function() {
-  console.log("Here is another problem " + this.totalValue);
+  
   // return this.playersArray[this.playersArray.length -1].totalhand() < 17;
   return this.playersArray[this.playersArray.length -1].totalValue < 17;
 };
@@ -312,6 +313,7 @@ var startGame = function(array){
 
 
 var joinGame = function() {
+console.log("---------------------------");
 console.log("join game is being called");
   if ((userName) || (roomPlayer.length > 0 && queue.length > 0)){
     if (!playerIntheRP()) {
@@ -358,7 +360,6 @@ Game.prototype.setUpRound = function(){
 };
 
 Game.prototype.playRound = function(){
-  console.log(g);
   this.playersArray[this.turn].money -= this.playersArray[this.turn].bet;
   this.playersArray[this.turn].status = "Your this.turn"; 
   this.playTimer();
@@ -373,7 +374,7 @@ Game.prototype.playTimer = function(){
 
   var _this = this;
    timerPlay = setTimeout(function(){
-    console.log("first timer");
+    console.log("first timer Reached after 2 secs");
     _this.playersArray[_this.turn].status = "Stand";   
     _this.stand();
   },2000);
@@ -395,27 +396,31 @@ Game.prototype.hit = function(playerIndex){  //-------------------------------(I
 
 Game.prototype.stand = function(){
 // hideButtons(this.playersArray[this.turn]); //----------------------------------------------------(Hide Buttons Player Side) 
-console.log("stand is being called");
 if (this.playersArray[this.turn].status !== "Busted") {
   this.playersArray[this.turn].status = "Stand"; 
 }
-// console.log(timerPlay);
-// clearTimeout(timerPlay);
 
 this.nextTurn();
 };
 
 Game.prototype.nextTurn = function(){
-  
+  //delete next lines
+  console.log("Player1 money " + g.playersArray[0].money);
+  if (g.playersArray.length > 2) {
+    console.log("Player2 money " + g.playersArray[1].money);
+  }
+
+
   this.turn += 1;
   if (this.playersArray.length-1 > this.turn) {
     this.playRound(); 
-    console.log("Next Turn"); 
+    console.log("Next Turn with many players"); 
   } else {
-    
-    for (var i = 0; i < this.playersArray.length-2; i++) {
+    console.log("length ",this.playersArray.length);
+    for (var i = 0; i <= this.playersArray.length-2; i++) {
+      console.log("Turn: " ,i );  
       this.checkForWinner(i);
-      console.log("Next Turn Test");
+      
     }
   this.finishHand();
   }
@@ -423,13 +428,18 @@ Game.prototype.nextTurn = function(){
 
 
 Game.prototype.finishHand = function() {
-  this.gameInProcess = false;
+  gameInProcess = false;
   // this.invitePlayers();
   // invitePlayersForAnotherRound();------------------------------------------------------------------(Display buttons YES & NO & Message "Play Again?")
-  console.log("second timer 1");
   var finishTimer = setTimeout(function(){
-    console.log("second timer 2");
-    joinGame();
+    console.log("second timer reached after 2 secs");
+    // for (var i = 0; i < g.playersArray.length; i++) {
+      // if (g.playersArray[i].money > 0) {}; 
+    // };
+    if ( g.playersArray[0].money > 0) { //---------------------Stops the game when money = $0
+      joinGame();
+    }
+    
   },2000);
 
 };
@@ -496,6 +506,7 @@ userName = req.cookies['username'];
 var userHash = {};
 io.on('connection', function(socket){
   socket.on("join game", function(){
+  console.log("Its connecting");
   joinGame();
   });
   socket.nickname = userName;
