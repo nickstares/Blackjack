@@ -379,6 +379,7 @@ Game.prototype.hidePlayerHsButtons = function() {
 
 Game.prototype.playTimer = function(){
 
+<<<<<<< HEAD
     // displayCardsButtons(this.playersArray[this.turn]); --------------------------------(Display on Player Side)
     // Send message to the player --> "Your this.turn and Display Buttons" ---------------(Display on Player Side) 
     this.displayButtonsToPlayer();
@@ -463,8 +464,7 @@ Game.prototype.playTimer = function(){
 		if ( g.playersArray[0].money > 0) { //---------------------Stops the game when money = $0
 		    joinGame();
 		}
-    
-	    },5000);
+    	    },5000);
 
 	};
 
@@ -487,7 +487,8 @@ Game.prototype.playTimer = function(){
 
     Game.prototype.reset = function(){
 	for (var i = 0; i < this.playersArray.length; i++) {
-        this.playersArray[i].aceCounteyer", "Your this.turn", "Hit", "Stand", "Busted", "Joined next hand"
+	    this.playersArray[i].aceCounter
+// "Your this.turn", "Hit", "Stand", "Busted", "Joined next hand"
 
 
 // ----------------------------------------------------------------------------
@@ -515,6 +516,25 @@ app.get('/newUser', functi// console.log(userHash["nick"])
 
 
 
+    console.log(userHash);
+    io.on('connection', function(socket){
+	    socket.on("join game", function(){
+		    console.log("Its connecting");
+		    joinGame();
+		});
+	    socket.nickname = userName;
+	    userHash[userName] = socket;
+	    // this socket listens for the hit request
+	    socket.on("hit request", function(){
+		    g.hit();
+		});
+	    socket.on("stand request", function(){
+		    g.stand();
+		});
+	    userHash[userName].emit("hello world", "hello world " + userName);
+		});
+
+
 // ---------------------SHOWS INDEX PAGE
 app.get('/', function(req, res){
   res.render('index');
@@ -528,7 +548,7 @@ app.get('/', function(req, res){
      if (success === 1) {
        res.redirect('/');
      } else {
-       console.log("person already exists, figure on
+	 console.log("person already exists, figure on")
 	app.post("/blackjack", function(req, res){
 		var getUserPass = function(){
 		    client.HGET("users", req.body.userName, function(err, reply){
