@@ -9,7 +9,6 @@ $(document).ready(function() {
 	// //------------------- JQUERY -----------------------
 
 
-<<<<<<< HEAD
 
 	//----------------------SOCKET EMISSION
 	var socket = io();  
@@ -18,20 +17,6 @@ $(document).ready(function() {
 		// e.preventDefault();
 		socket.emit("join game");
 	    });
-=======
-  socket.on("set time", function(msg){
-    $('#time1').text(msg + " scs");
-    console.log(msg);
-  });
-
-  socket.on('hide', function(msg){
-    $('.hitb').attr("disabled",true);
-    console.log("Worked");
-    // console.log(msg);
-
-    
-  }); 
->>>>>>> d55d79f2d5e761969c3165855969218c996db564
 
 
 	$('#hit').on("submit", function(e){
@@ -55,15 +40,11 @@ $(document).ready(function() {
 		}  
 	    });
 
-<<<<<<< HEAD
 	socket.on('hide', function(msg){
 		$('.hitb').attr("disabled",true);
 		$('.standb').attr("disabled",true);
 
 	    });
-=======
-  
->>>>>>> d55d79f2d5e761969c3165855969218c996db564
 
 	socket.on('show', function(){
 		console.log("Camilo, show works");
@@ -100,4 +81,7 @@ $(document).ready(function() {
 	// socket.on('show buttons to user', function(){
 	//   $('body').append
 	// });
+
+  
+
     });

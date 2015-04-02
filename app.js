@@ -149,7 +149,7 @@ Player.prototype.totalhand = function(){
     for(var j=0;j<this.hand.length;j++){
 	this.totalValue += this.hand[j].value;
     }
-    console.log("Total Value " + this.totalValue);
+    // console.log("Total Value " + this.totalValue);
     return this.totalValue;
 
 
@@ -176,7 +176,7 @@ Game.prototype.deal = function(index, cards){
     // this sets the current hand equal to the hand concatinated with the cards drawn
     this.playersArray[index].hand = this.playersArray[index].hand.concat(this.currentDeck.draw(cards));
     this.playersArray[index].totalhand();
-    console.log("My cards" + this.playersArray[index].hand);
+    // console.log("My cards" + this.playersArray[index].hand);
 };
  
 
@@ -314,7 +314,7 @@ var startGame = function(array){
 
 var joinGame = function() {
     console.log("---------------------------");
-    console.log("join game is being called");
+    console.log("Join game is being called");
     if ((userName) || (roomPlayer.length > 0 && queue.length > 0)){
 	if (!playerIntheRP()) {
 	    roomPlayer.unshift(userName); 
@@ -336,6 +336,7 @@ var joinGame = function() {
 	    }
 	} else {
 	    startGame(roomPlayer);  
+	    console.log("Player 1 started the Game");
 	    g.setUpRound();    
 	}
     }
@@ -353,10 +354,19 @@ playerIntheRP = function(){
 // ------------------- PLAY ROUND  -------------------------------
 
 Game.prototype.setUpRound = function(){
+  
     gameInProcess = true;
     g.initialDeal();
     this.turn = 0;
     this.playRound();
+
+    //tester------------------tester
+    for (var i = 0; i < this.playersArray.length ; i++) {
+	console.log("Player Idx: "+ [i] +" HAND:  "+ this.playersArray[i].hand);
+	console.log("Player Idx: "+ [i] +" TOTAL:--------- "+ this.playersArray[i].totalValue);
+    }
+    //tester------------------tester ends
+
 };
 
 Game.prototype.playRound = function(){
@@ -379,7 +389,6 @@ Game.prototype.hidePlayerHsButtons = function() {
 
 Game.prototype.playTimer = function(){
 
-<<<<<<< HEAD
     // displayCardsButtons(this.playersArray[this.turn]); --------------------------------(Display on Player Side)
     // Send message to the player --> "Your this.turn and Display Buttons" ---------------(Display on Player Side) 
     this.displayButtonsToPlayer();
@@ -388,107 +397,135 @@ Game.prototype.playTimer = function(){
     this.intervalTrigger();
     var _this = this;
     this.timerPlay = setTimeout(function(){
-	    console.log("first timer Reached after 2 secs");
+	    // console.log("first timer Reached after 2 secs");
 	    _this.playersArray[_this.turn].status = "Stand";   
 	    _this.stand();
 
 	    _this.cleanTimer =  clearInterval(_this.intervalId);
 	    // count1 = 11;
-	    console.log(is = this;
-			this.intervalId = setInterval(function() {
-				_this.callCounter();
-			    },1000);
-			};
+	    // console.log("Interval cleared");
+	},21000);
 
-	    Game.prototype.callCounter = function(){  
-		console.log(count1);
-		count1 -= 1;
-		io.emit("set time", count1 );
-	    };
+};
+
+Game.prototype.intervalTrigger = function(){
+    var _this = this;
+    this.intervalId = setInterval(function() {
+	    _this.callCounter();
+	},1000);
+};
+
+Game.prototype.callCounter = function(){  
+    console.log(count1);
+    count1 -= 1;
+    io.emit("set time", count1 );
+};
   
 
-	    Game.prototype.hit = function(){  
-		this.deal(this.turn, 1);
-		// -----Sends the hand to the player
-		if(this.playersArray.length -2 >= this.turn ){
-		    userHash[this.playersArray[this.turn].name].emit("cards", this.playersArray[this.turn].hand);
-		}
-		//----Does the hit function
-		if (this.playersArray[this.turn].busted()) {
-		    this.playersArray[this.turn].status = "Busted";
-		    clearTimeout(this.timerPlay);
-		    clearInterval(this.intervalId);
-		    this.stand(); 
-		}else {
-		    // console.log(this.timerPlay)
-		    clearTimeout(this.timerPlay);
-		    // cBusted") {
-		    this.playersArray[this.turn].status = "Stand"; 
-		}
+Game.prototype.hit = function(){  
+    this.deal(this.turn, 1);
+    // -----Sends the hando to the player
+    if(this.playersArray.length -2 >= this.turn ){
+	userHash[this.playersArray[this.turn].name].emit("cards", this.playersArray[this.turn].hand);
+    }
+    //----Does the hit function
+    if (this.playersArray[this.turn].busted()) {
+	this.playersArray[this.turn].status = "Busted";
+	clearTimeout(this.timerPlay);
+	clearInterval(this.intervalId);
+	this.stand(); 
+    }else {
+	// console.log(this.timerPlay)
+	clearTimeout(this.timerPlay);
+	// count1=21;
+	clearInterval(this.intervalId);
+	this.playTimer();  
+    } 
+};
 
-		this.nextTurn();
-	    };
+Game.prototype.stand = function(){
+    clearTimeout(this.timerPlay);
+    clearInterval(this.intervalId);
+    this.hidePlayerHsButtons();
+    if (this.playersArray[this.turn].status !== "Busted") {
+	this.playersArray[this.turn].status = "Stand"; 
+    }
 
-	    Game.prototype.nextTurn = function(){
-		//delete next lines
-		console.log("Player1 money " + g.playersArray[0].money);
-		if (g.playersArray.length > 2) {
-		    console.log("Player2 money " + g.playersArray[1].money);
-		}
+    this.nextTurn();
+};
 
+Game.prototype.nextTurn = function(){
+    //delete next lines
+    // console.log("Player1 money " + g.playersArray[0].money);
+    // if (g.playersArray.length > 2) {
+    // console.log("Player2 money " + g.playersArray[1].money);
+    // }
 
-		this.turn += 1;
-		if (this.playersArray.length-1 > this.turn) {
-		    this.playRound(); 
-		    console.log("Next Turn with many players"); 
-		} else {
-		    console.log("length ",this.playersArray.length);
-		    for (var i = 0; i <= this.playersArray.length-2; i++) {
-			console.log("Turn: " ,i );  
+    this.turn += 1;
+    if (this.playersArray.length-1 > this.turn) {
+	this.playRound(); 
+	console.log("Next Turn with many players"); 
+    } else {
+	console.log("length ",this.playersArray.length);
+	for (var i = 0; i <= this.playersArray.length-2; i++) {
+	    // console.log("Turn: " ,i );  
+	    this.checkForWinner(i);
       
-			this.checkForWinner(i);
-      
-		    }
-		    this.finishHand();
-		}
-	    };
-
-
-	    Game.prototype.finishHand = function() {
-		gameInProcess = false;
-		// this.invitePlayers();
-		// invitePlayersForAnotherRound();---------------------;
-		// for (var i = 0; i < g.playersArray.length; i++) {
-		// if (g.playersArray[i].money > 0) {}; 
-		// };
-		if ( g.playersArray[0].money > 0) { //---------------------Stops the game when money = $0
-		    joinGame();
-		}
-    	    },5000);
-
-	};
-
-    Game.prototype.logOut = function () {
-	if (this.roomPlayer.length === 1 ) {
-	    g = null;
 	}
-	for (var i = 0; i < roomPlayer.length; i++) {
-	    roomPlayer.splice(roomPlayer[i],1);
-	}
-	for (var j = 0; j < playersArray.length; j++) {
-	    playersArray.splice(playersArray[j],1);
-	}
+	this.finishHand();
+    }
+};
+
+
+Game.prototype.finishHand = function() {
+    gameInProcess = false;
+    // this.invitePlayers();
+    // invitePlayersForAnotherRound();------------------------------------------------------------------(Display buttons YES & NO & Message "Play Again?")
+    var finishTimer = setTimeout(function(){
+	    // console.log("second timer reached after 2 secs");
+	    // for (var i = 0; i < g.playersArray.length; i++) {
+	    // if (g.playersArray[i].money > 0) {}; 
+	    // };
+	    if ( g.playersArray[0].money > 0) { //---------------------Stops the game when money = $0
+		joinGame();
+	    }
+    
+	},5000);
+
+};
+
+Game.prototype.logOut = function () {
+    if (this.roomPlayer.length === 1 ) {
+	g = null;
+    }
+    for (var i = 0; i < roomPlayer.length; i++) {
+	roomPlayer.splice(roomPlayer[i],1);
+    }
+    for (var j = 0; j < playersArray.length; j++) {
+	playersArray.splice(playersArray[j],1);
+    }
   
-    };
+};
 
 
 
-    // ------------------- RESET GAME  ------------------------------
+// ------------------- RESET GAME  ------------------------------
 
-    Game.prototype.reset = function(){
-	for (var i = 0; i < this.playersArray.length; i++) {
-	    this.playersArray[i].aceCounter
-// "Your this.turn", "Hit", "Stand", "Busted", "Joined next hand"
+Game.prototype.reset = function(){
+    for (var i = 0; i < this.playersArray.length; i++) {
+        this.playersArray[i].aceCounter = 0;  
+        this.playersArray[i].hand = [];
+        this.playersArray[i].bet = 10;
+        this.currentDeck = new Deck();
+    }
+};
+
+   
+ 
+
+//  Kick bastards out of the game
+//  Change userName for the right syntax
+// Camilo Added --> Player --> this.status --> "New Player", "Your this.turn", "Hit", "Stand", "Busted", "Joined next hand"
 
 
 // ----------------------------------------------------------------------------
@@ -496,83 +533,91 @@ Game.prototype.playTimer = function(){
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
- // ROUTES AND OTHER THINGS BELOW:
+// ROUTES AND OTHER THINGS BELOW:
 
 
 // Render new user page
-app.get('/newUser', functi// console.log(userHash["nick"])
-    userHash[userName].emit("hello world", "hello world " + userName );
-
-    // --------TEST -----------------
-    // io.emit("set time", count1 );
-    // console.log("Timer Camilo", timeTest());
-    socket.on("hit request", function(){
-      g.hit();
+app.get('/newUser', function(req, res){
+	res.render('newUser');
     });
-    socket.on("stand request", function(){
-      g.stand();
+
+// Enter global chat
+app.get('/blackjack', function(req, res){
+	res.render('blackjack');
+
+	userName = req.cookies['username'];
+
     });
-});
 
 
+// ---------------------LISTENERS
+var userHash = {};
+io.on('connection', function(socket){
+	socket.on("join game", function(){
+		console.log("Its connecting");
+		joinGame();
+	    });
+	socket.nickname = userName;
+	// console.log(userName)
+	userHash[userName] = socket;
+	// console.log(userHash["nick"])
+	userHash[userName].emit("hello world", "hello world " + userName );
 
-    console.log(userHash);
-    io.on('connection', function(socket){
-	    socket.on("join game", function(){
-		    console.log("Its connecting");
-		    joinGame();
-		});
-	    socket.nickname = userName;
-	    userHash[userName] = socket;
-	    // this socket listens for the hit request
-	    socket.on("hit request", function(){
-		    g.hit();
-		});
-	    socket.on("stand request", function(){
-		    g.stand();
-		});
-	    userHash[userName].emit("hello world", "hello world " + userName);
-		});
+	// --------TEST -----------------
+	// io.emit("set time", count1 );
+	// console.log("Timer Camilo", timeTest());
+	socket.on("hit request", function(){
+		g.hit();
+	    });
+	socket.on("stand request", function(){
+		g.stand();
+	    });
+    });
+
 
 
 // ---------------------SHOWS INDEX PAGE
 app.get('/', function(req, res){
-  res.render('index');
-});
+	res.render('index');
+    });
 
 // ---------------------POST ROUTE FOR CREATING A NEW USER
 // Create new User
- //validate uniqueness of userName
- app.post("/newuser", function(req, res){
-   client.HSETNX("users", req.body.userName, req.body.userPass, function(err, success) {
-     if (success === 1) {
-       res.redirect('/');
-     } else {
-	 console.log("person already exists, figure on")
-	app.post("/blackjack", function(req, res){
-		var getUserPass = function(){
-		    client.HGET("users", req.body.userName, function(err, reply){
-			    if (err){
-				console.log("Could not query the database");
-			    }
-			    if (req.body.userPass == reply){
-				res.redirect("/blackjack");
-			    } else {
-				console.log("Incorrect UserName or Password");
-				res.redirect('/');
-			    }
-			});
-		};
-		getUserPass();
+//validate uniqueness of userName
+app.post("/newuser", function(req, res){
+	client.HSETNX("users", req.body.userName, req.body.userPass, function(err, success) {
+		if (success === 1) {
+		    res.redirect('/');
+		} else {
+		    console.log("person already exists, figure out how to render this to the page");
+		}
 	    });
+    });
+
+
+// ---------------------VALIDATES THE RIGHT USER NAME AND PASSWORND AND REDIRECTS TO GAME 
+//validates userPass === userName and logs in
+app.post("/blackjack", function(req, res){
+	var getUserPass = function(){
+	    client.HGET("users", req.body.userName, function(err, reply){
+		    if (err){
+			console.log("Could not query the database");
+		    }
+		    if (req.body.userPass == reply){
+			res.redirect("/blackjack");
+		    } else {
+			console.log("Incorrect UserName or Password");
+			res.redirect('/');
+		    }
+		});
+	};
+	getUserPass();
+    });
 
 
 
-	// ---------------------START THE SERVER --------------------
-	http.listen(3000, function(){
-		console.log('listening on *:3000');
-	    });
-	// ---------------------NOTHING AFTER THIS --------------------
-
-
-
+// ---------------------START THE SERVER --------------------
+http.listen(3000, function(){
+	console.log('listening on *:3000');
+    });
+// ---------------------NOTHING AFTER THIS --------------------

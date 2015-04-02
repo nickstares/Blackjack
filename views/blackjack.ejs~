@@ -19,55 +19,55 @@
    <img src="/img/Background.png" alt="" id="background">
    
       <form action="javascript:void(0)" id="hit" class="">
-         <input type="submit" value="P1 hit" class="btn btn-default hitb">
+         <input type="submit" value="P1 hit" class="btn btn-default hitb" disabled="true">
       </form>
 
       <form action="javascript:void(0)" id="stand">
-         <input type="submit" value="P1 Stand" class="btn btn-default">
+         <input type="submit" value="P1 Stand" class="btn btn-default standb" disabled="true">
       </form>
    
    <div class="wallet">
       <p id="walletScore">$ 300</p>
    </div>   
 
-   <div class="delaer_card_1">
-         <p>Ace of Hearts</p>
+   <div class="dealer_card_1">
+         <p >Ace of Hearts</p>
    </div>
 
-   <div class="delaer_card_2">
+   <div class="dealer_card_2">
          <p>10 of Hearts</p>
    </div>
 
-   <div class="delaer_card_3">
+   <div class="dealer_card_3">
          <p>80 of Hearts</p>
    </div>
 
-   <div class="delaer_card_4">
+   <div class="dealer_card_4">
          <p>120 of Hearts</p>
    </div>
 
-   <div class="delaer_card_5">
+   <div class="dealer_card_5">
          <p>120 of Hearts</p>
    </div>
 
    <div class="player_card_1">
-         <p>Ace of Hearts</p>
+         <p id="player_card_1_id">Ace of Hearts</p>
    </div>
 
    <div class="player_card_2">
-         <p>10 of Hearts</p>
+         <p></p>
    </div>
 
    <div class="player_card_3">
-         <p>80 of Hearts</p>
+         <p></p>
    </div>
 
    <div class="player_card_4">
-         <p>120 of Hearts</p>
+         <p></p>
    </div>
 
    <div class="player_card_5">
-         <p>120 of Hearts</p>
+         <p></p>
    </div>
 
    <div class="time">
@@ -111,4 +111,3 @@
 <script src= "./js/player.js"></script>
 
 </html>
-

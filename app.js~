@@ -365,7 +365,6 @@ Game.prototype.playRound = function(){
     this.playTimer();
 };
 
-<<<<<<< HEAD
 Game.prototype.displayButtonsToPlayer = function() {
     userHash[this.playersArray[this.turn].name].emit('show');
 };
@@ -376,18 +375,10 @@ Game.prototype.hidePlayerHsButtons = function() {
     }
 }; 
 
-=======
-Game.prototype.hidePlayerHsButtons = function() {
-  if  (this.playersArray.length -2 >= this.turn){
-  	userHash[this.playersArray[this.turn].name].emit('hide',"HI!!Nick!");
-	}
-};
->>>>>>> d55d79f2d5e761969c3165855969218c996db564
 
 
 Game.prototype.playTimer = function(){
 
-<<<<<<< HEAD
     // displayCardsButtons(this.playersArray[this.turn]); --------------------------------(Display on Player Side)
     // Send message to the player --> "Your this.turn and Display Buttons" ---------------(Display on Player Side) 
     this.displayButtonsToPlayer();
@@ -402,128 +393,46 @@ Game.prototype.playTimer = function(){
 
 	    _this.cleanTimer =  clearInterval(_this.intervalId);
 	    // count1 = 11;
-	    console.log(is = this;
-			this.intervalId = setInterval(function() {
-				_this.callCounter();
-			    },1000);
-			};
+	    console.log("Interval cleared");
+	},21000);
 
-	    Game.prototype.callCounter = function(){  
-		console.log(count1);
-		count1 -= 1;
-		io.emit("set time", count1 );
-	    };
-  
-
-	    Game.prototype.hit = function(){  
-		this.deal(this.turn, 1);
-		// -----Sends the hand to the player
-		if(this.playersArray.length -2 >= this.turn ){
-		    userHash[this.playersArray[this.turn].name].emit("cards", this.playersArray[this.turn].hand);
-		}
-		//----Does the hit function
-		if (this.playersArray[this.turn].busted()) {
-		    this.playersArray[this.turn].status = "Busted";
-		    clearTimeout(this.timerPlay);
-		    clearInterval(this.intervalId);
-		    this.stand(); 
-		}else {
-		    // console.log(this.timerPlay)
-		    clearTimeout(this.timerPlay);
-		    // cBusted") {
-		    this.playersArray[this.turn].status = "Stand"; 
-		}
-
-		this.nextTurn();
-	    };
-
-	    Game.prototype.nextTurn = function(){
-		//delete next lines
-		console.log("Player1 money " + g.playersArray[0].money);
-		if (g.playersArray.length > 2) {
-		    console.log("Player2 money " + g.playersArray[1].money);
-		}
-
-
-		this.turn += 1;
-		if (this.playersArray.length-1 > this.turn) {
-		    this.playRound(); 
-		    console.log("Next Turn with many players"); 
-		} else {
-		    console.log("length ",this.playersArray.length);
-		    for (var i = 0; i <= this.playersArray.length-2; i++) {
-			console.log("Turn: " ,i );  
-      
-			this.checkForWinner(i);
-      
-		    }
-		    this.finishHand();
-		}
-	    };
-
-
-	    Game.prototype.finishHand = function() {
-		gameInProcess = false;
-		// this.invitePlayers();
-		// invitePlayersForAnotherRound();---------------------;
-		// for (var i = 0; i < g.playersArray.length; i++) {
-		// if (g.playersArray[i].money > 0) {}; 
-		// };
-		if ( g.playersArray[0].money > 0) { //---------------------Stops the game when money = $0
-		    joinGame();
-		}
-=======
-  // displayCardsButtons(this.playersArray[this.turn]); --------------------------------(Display on Player Side)
-  // Send message to the player --> "Your this.turn and Display Buttons" ---------------(Display on Player Side) 
-  // displayButtonsToPlayer();
-  count1 = 11; // Required dont delete
-  this.intervalTrigger();
-  var _this = this;
-
-  this.timerPlay = setTimeout(function(){
-  // var timerPlay = setTimeout(function(){
-  console.log("first timer Reached after 2 secs");
-    _this.playersArray[_this.turn].status = "Stand";   
-    _this.stand();
-    clearInterval(_this.intervalId);
-    // count1 = 11;
-    console.log("Interval cleared");
-    },11000);
 };
 
 Game.prototype.intervalTrigger = function(){
-  _this = this;
-  this.intervalId = setInterval(function() {
-    _this.callCounter();
-  },1000);
+    var _this = this;
+    this.intervalId = setInterval(function() {
+	    _this.callCounter();
+	},1000);
 };
 
 Game.prototype.callCounter = function(){  
-  console.log(count1);
-  count1 -= 1;
-  io.emit("set time", count1 );
+    console.log(count1);
+    count1 -= 1;
+    io.emit("set time", count1 );
 };
   
 
 Game.prototype.hit = function(){  
-  this.deal(this.turn, 1);
-  if (this.playersArray[this.turn].busted()) {
-    this.playersArray[this.turn].status = "Busted";
-    this.stand();    
-  }else {
-    clearTimeout(this.timerPlay);
-    this.playTimer();  
-  } 
-};
-
-Game.prototype.stand = function(){
-    this.hidePlayerHsButtons();
-    console.log("this.playersArray[0]", this.playersArray[0]);
-    console.log("this.turn", this.turn);
-    if (this.playersArray[this.turn].status !== "Busted") {
-	this.playersArray[this.turn].status = "Stand"; 
+    this.deal(this.turn, 1);
+    // -----Sends the hand to the player
+    if(this.playersArray.length -2 >= this.turn ){
+	userHash[this.playersArray[this.turn].name].emit("cards", this.playersArray[this.turn].hand);
     }
-    this.nextTurn();
+    //----Does the hit function
+    if (this.playersArray[this.turn].busted()) {
+	this.playersArray[this.turn].status = "Busted";
+	clearTimeout(this.timerPlay);
+	clearInterval(this.intervalId);
+	this.stand(); 
+    }else {
+	// console.log(this.timerPlay)
+	clearTimeout(this.timerPlay);
+	// count1=21;
+    clearIntervalBusted") {
+  this.playersArray[this.turn].status = "Stand"; 
+}
+
+this.nextTurn();
 };
 
 Game.prototype.nextTurn = function(){
@@ -542,7 +451,9 @@ Game.prototype.nextTurn = function(){
     console.log("length ",this.playersArray.length);
     for (var i = 0; i <= this.playersArray.length-2; i++) {
       console.log("Turn: " ,i );  
+      
       this.checkForWinner(i);
+      
     }
   this.finishHand();
   }
@@ -550,129 +461,107 @@ Game.prototype.nextTurn = function(){
 
 
 Game.prototype.finishHand = function() {
-  gameInProcess = false;
-  // this.invitePlayers();
-  // invitePlayersForAnotherRound();------------------------------------------------------------------(Display buttons YES & NO & Message "Play Again?")
-  var finishTimer = setTimeout(function(){
-    console.log("second timer reached after 2 secs");
+  gameInProcess = fa;
     // for (var i = 0; i < g.playersArray.length; i++) {
       // if (g.playersArray[i].money > 0) {}; 
     // };
     if ( g.playersArray[0].money > 0) { //---------------------Stops the game when money = $0
       joinGame();
     }
->>>>>>> d55d79f2d5e761969c3165855969218c996db564
     
-	    },5000);
+  },5000);
 
-	};
+};
 
-    Game.prototype.logOut = function () {
-	if (this.roomPlayer.length === 1 ) {
-	    g = null;
-	}
-	for (var i = 0; i < roomPlayer.length; i++) {
-	    roomPlayer.splice(roomPlayer[i],1);
-	}
-	for (var j = 0; j < playersArray.length; j++) {
-	    playersArray.splice(playersArray[j],1);
-	}
+Game.prototype.logOut = function () {
+  if (this.roomPlayer.length === 1 ) {
+    g = null;
+  }
+  for (var i = 0; i < roomPlayer.length; i++) {
+    roomPlayer.splice(roomPlayer[i],1);
+  }
+  for (var j = 0; j < playersArray.length; j++) {
+    playersArray.splice(playersArray[j],1);
+  }
   
-    };
+};
 
 
 
-    // ------------------- RESET GAME  ------------------------------
+// ------------------- RESET GAME  ------------------------------
 
-    Game.prototype.reset = function(){
-	for (var i = 0; i < this.playersArray.length; i++) {
-        this.playersArray[i].aceCounteyer", "Your this.turn", "Hit", "Stand", "Busted", "Joined next hand"
-
-
-// ----------------------------------------------------------------------------
-// ----------------------------------------------------------------------------
-// ----------------------------------------------------------------------------
-// ----------------------------------------------------------------------------
-// ----------------------------------------------------------------------------
- // ROUTES AND OTHER THINGS BELOW:
+Game.prototype.reset = function(){
+      for (var i = 0; i < this.playersArray.length; i++) {
+        this.playersArray[i].aceCounter = 0;  
+        yer", "Your this.turn", "Hit", "Stand", "Busted", "Joined next hand"
 
 
-// Render new user page
-app.get('/newUser', functi// console.log(userHash["nick"])
-    userHash[userName].emit("hello world", "hello world " + userName );
+	// ----------------------------------------------------------------------------
+	// ----------------------------------------------------------------------------
+	// ----------------------------------------------------------------------------
+	// ----------------------------------------------------------------------------
+	// ----------------------------------------------------------------------------
+	// ROUTES AND OTHER THINGS BELOW:
 
-    // --------TEST -----------------
-    // io.emit("set time", count1 );
-    // console.log("Timer Camilo", timeTest());
-    socket.on("hit request", function(){
-      g.hit();
+
+	// Render new user page
+	app.get('/newUser', function(req, res){
+		res.render('newUser');
+	    });
+
+	// Enter global chat
+	app.get('/blackjack', function(req, // console.log(userHash["nick"])
+				       userHash[userName].emit("hello world", "hello world " + userName );
+
+				       // --------TEST -----------------
+				       // io.emit("set time", count1 );
+				       // console.log("Timer Camilo", timeTest());
+				       socket.on("hit request", function(){
+					       g.hit();
+					   });
+				       socket.on("stand request", function(){
+					       g.stand();
+					   });
+				       });
+
+
+
+	// ---------------------SHOWS INDEX PAGE
+	app.get('/', function(req, res){
+		res.render('index');
+	    });
+
+	// ---------------------POST ROUTE FOR CREATING A NEW USER
+	// Create new User
+	//validate uniqueness of userName
+	app.post("/newuser", function(req, res){
+		client.HSETNX("users", req.body.userName, req.body.userPass, function(err, success) {
+			if (success === 1) {
+			    res.redirect('/');
+			} else {
+
+ app.post("/blackjack", function(req, res){
+  var getUserPass = function(){
+    client.HGET("users", req.body.userName, function(err, reply){
+      if (err){
+        console.log("Could not query the database");
+      }
+      if (req.body.userPass == reply){
+        res.redirect("/blackjack");
+      } else {
+        console.log("Incorrect UserName or Password");
+        res.redirect('/');
+      }
     });
-    socket.on("stand request", function(){
-      g.stand();
-    });
+  };
+  getUserPass();
 });
 
 
 
-<<<<<<< HEAD
-=======
-    console.log(userHash);
-    io.on('connection', function(socket){
-	    socket.on("join game", function(){
-		    console.log("Its connecting");
-		    joinGame();
-		});
-	    socket.nickname = userName;
-	    userHash[userName] = socket;
-	    // this socket listens for the hit request
-	    socket.on("hit request", function(){
-		    g.hit();
-		});
-	    socket.on("stand request", function(){
-		    g.stand();
-		});
-	    userHash[userName].emit("hello world", "hello world " + userName);
-		});
-
->>>>>>> d55d79f2d5e761969c3165855969218c996db564
-// ---------------------SHOWS INDEX PAGE
-app.get('/', function(req, res){
-  res.render('index');
+// ---------------------START THE SERVER --------------------
+http.listen(3000, function(){
+  console.log('listening on *:3000');
 });
-
-// ---------------------POST ROUTE FOR CREATING A NEW USER
-// Create new User
- //validate uniqueness of userName
- app.post("/newuser", function(req, res){
-   client.HSETNX("users", req.body.userName, req.body.userPass, function(err, success) {
-     if (success === 1) {
-       res.redirect('/');
-     } else {
-       console.log("person already exists, figure on
-	app.post("/blackjack", function(req, res){
-		var getUserPass = function(){
-		    client.HGET("users", req.body.userName, function(err, reply){
-			    if (err){
-				console.log("Could not query the database");
-			    }
-			    if (req.body.userPass == reply){
-				res.redirect("/blackjack");
-			    } else {
-				console.log("Incorrect UserName or Password");
-				res.redirect('/');
-			    }
-			});
-		};
-		getUserPass();
-	    });
-
-
-
-	// ---------------------START THE SERVER --------------------
-	http.listen(3000, function(){
-		console.log('listening on *:3000');
-	    });
-	// ---------------------NOTHING AFTER THIS --------------------
-
-
+// ---------------------NOTHING AFTER THIS --------------------
 
